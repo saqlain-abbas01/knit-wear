@@ -9,7 +9,7 @@ import TypingHeading from "@/components/TypingHeading"
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col w-full">
+    <main className="flex min-h-screen flex-col w-full ">
     <AnimatedBanner />
 
     <section className="px-4 py-12 md:py-24 space-y-8">

@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} `}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <div className="overflow-x-hidden ">
+          <div className="overflow-x-hidden relative">
             <Navbar />
             <div className="flex-1 mx-auto max-w-7xl">{children}</div>
             <Footer />
