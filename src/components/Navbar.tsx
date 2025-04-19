@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Menu, Search, ShoppingBag, User, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { cn } from "@/lib/utils"
-import { ThemeToggle } from "@/components/ThemeToggle"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Navbar() {
-  const pathname = usePathname()
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const pathname = usePathname();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const routes = [
     { name: "Home", path: "/" },
     { name: "Women", path: "/products?category=women" },
     { name: "Men", path: "/products?category=men" },
-  ]
+  ];
 
   return (
-    <header className="mx-auto max-w-7xl sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
-      <div className="container flex h-16 items-center">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
+      <div className=" mx-auto max-w-6xl container flex h-16 items-center">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
@@ -58,7 +58,7 @@ export default function Navbar() {
               href={route.path}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                pathname === route.path && "text-primary",
+                pathname === route.path && "text-primary"
               )}
             >
               {route.name}
@@ -70,13 +70,24 @@ export default function Navbar() {
           <ThemeToggle />
           {isSearchOpen ? (
             <div className="flex items-center border rounded-md overflow-hidden">
-              <Input placeholder="Search..." className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" />
-              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)}>
+              <Input
+                placeholder="Search..."
+                className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSearchOpen(false)}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           ) : (
-            <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchOpen(true)}
+            >
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
@@ -88,7 +99,7 @@ export default function Navbar() {
           </Button>
 
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
+            <Link href="/carts">
               <ShoppingBag className="h-5 w-5" />
               <span className="sr-only">Cart</span>
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
@@ -99,5 +110,5 @@ export default function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

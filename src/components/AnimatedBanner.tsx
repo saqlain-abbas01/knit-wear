@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AnimatedBanner() {
-  const [currentBanner, setCurrentBanner] = useState(0)
+  const [currentBanner, setCurrentBanner] = useState(0);
 
   const banners = [
     {
@@ -20,46 +20,45 @@ export default function AnimatedBanner() {
       image: "/banner3.jpg",
       alt: "Free shipping on orders over $50",
     },
-  ]
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % banners.length)
-    }, 5000)
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [banners.length])
+    return () => clearInterval(interval);
+  }, [banners.length]);
 
   return (
-    <div className="relative h-[300px] md:h-[400px] w-screen left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={currentBanner}
-        className="absolute inset-0 w-full h-full"
-        initial={{ opacity: 0, x: 300 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -300 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-      >
-        <div className="relative w-full h-full">
-          <Image
-            src={banners[currentBanner].image || "/placeholder.svg"}
-            alt={banners[currentBanner].alt}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <div className="text-white text-center px-4">
-              <h2 className="text-2xl md:text-4xl font-bold mb-4">{banners[currentBanner].alt}</h2>
-              <button className="bg-white text-black px-6 py-2 rounded-md font-medium hover:bg-opacity-90 transition-colors">
-                Shop Now
-              </button>
+    <div className="relative h-[300px] md:h-[450px] w-screen left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={currentBanner}
+          className="absolute inset-0 w-full h-full"
+          initial={{ opacity: 0, x: 300 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -300 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+        >
+          <div className="relative w-full h-full">
+            <Image
+              src={banners[currentBanner].image || "/placeholder.svg"}
+              alt={banners[currentBanner].alt}
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div className="text-white text-center px-4">
+                <h2 className="text-2xl md:text-4xl font-bold mb-4">
+                  {banners[currentBanner].alt}
+                </h2>
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
-  </div>
-  )
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
 }
