@@ -94,8 +94,10 @@ export default function Navbar() {
           )}
 
           <Button variant="ghost" size="icon">
-            <User className="h-5 w-5" />
-            <span className="sr-only">Account</span>
+            <Link href={"/profile"}>
+              <User className="h-5 w-5" />
+              <span className="sr-only">Account</span>
+            </Link>
           </Button>
 
           <Button variant="ghost" size="icon" asChild>
