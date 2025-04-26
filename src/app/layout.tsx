@@ -5,9 +5,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AnimatedBanner from "@/components/AnimatedBanner";
 import { CartProvider } from "@/context/cart-context";
 import { Toaster } from "@/components/ui/sonner";
+import TanstackProvider from "@/lib/provider/queryprovider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +29,9 @@ export default function RootLayout({
           <CartProvider>
             <div className="bg-muted/50">
               <Navbar />
-              <div className="flex-1 ">{children}</div>
+              <TanstackProvider>
+                <div className="flex-1 ">{children}</div>
+              </TanstackProvider>
               <Footer />
             </div>
             <Toaster richColors position="bottom-right" />
