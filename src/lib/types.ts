@@ -12,3 +12,11 @@ export interface Product {
   colors: string[];
   brand: string;
 }
+
+export type Brand = {
+  id: string;
+  label: string;
+  value: string;
+  createdAt: string;
+  updatedAt: string;
+};

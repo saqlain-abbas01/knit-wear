@@ -9,6 +9,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useQuery } from "@tanstack/react-query";
+import { fecthAllBrands } from "@/lib/api/brands";
+import { Brand } from "@/lib/types";
+import { Divide } from "lucide-react";
 
 interface ProductFiltersProps {
   filters: {
@@ -24,12 +28,10 @@ export default function ProductFilters({
   filters,
   setFilters,
 }: ProductFiltersProps) {
-  const brands = [
-    "Comfort Essentials",
-    "Urban Comfort",
-    "Elegance",
-    "ActiveFit",
-  ];
+  const { data: brands } = useQuery({
+    queryKey: ["brands"],
+    queryFn: fecthAllBrands,
+  });
 
   const handleBrandChange = (brand: string) => {
     if (filters.brands.includes(brand)) {
@@ -83,18 +85,22 @@ export default function ProductFilters({
           <AccordionItem value="brand">
             <AccordionTrigger>Brand</AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-2">
-                {brands.map((brand) => (
-                  <div key={brand} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`brand-${brand}`}
-                      checked={filters.brands.includes(brand)}
-                      onCheckedChange={() => handleBrandChange(brand)}
-                    />
-                    <Label htmlFor={`brand-${brand}`}>{brand}</Label>
-                  </div>
-                ))}
-              </div>
+              {brands ? (
+                <div className="space-y-2">
+                  {brands.map((brand: Brand) => (
+                    <div key={brand.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`brand-${brand}`}
+                        checked={filters.brands.includes(brand.value)}
+                        onCheckedChange={() => handleBrandChange(brand.value)}
+                      />
+                      <Label htmlFor={`brand-${brand}`}>{brand.value}</Label>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">no brands to show</div>
+              )}
             </AccordionContent>
           </AccordionItem>
 
