@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function CategoryShowcase() {
   return (
-    <section className="container mx-auto max-w-6xl px-4 py-12">
+    <section className="container mx-auto max-w-7xl  py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="relative aspect-[4/5] overflow-hidden rounded-lg">
           <Image

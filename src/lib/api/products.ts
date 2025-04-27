@@ -1,8 +1,14 @@
+import { Product } from "../types";
 import api from "./axios";
 
 export const fetchRecentProducts = async () => {
-  console.log("fetch recent products");
   const response = await api.get("/products/recents");
+  return response.data;
+};
+
+export const fetchProductById = async (id: string) => {
+  console.log("fetch  products");
+  const response = await api.get(`/products/${id}`);
   return response.data;
 };
 

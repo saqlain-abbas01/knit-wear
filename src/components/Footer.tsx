@@ -3,8 +3,8 @@ import { Facebook, Instagram, Twitter } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="mx-auto max-w-6xl w-full border-t ">
-      <div className="container px-4 py-12 md:py-16">
+    <footer className="mx-auto max-w-7xl w-full border-t ">
+      <div className="container  py-12 md:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">LUXE INTIMATES</h3>
