@@ -1,59 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProductGrid from "@/components/ProductGrid";
 import ProductFilters from "@/components/ProductFilters";
 import { products } from "@/lib/products";
+import { fetchFilterProducts } from "@/lib/api/products";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category") || "all";
+  const router = useRouter();
+
+  const category = searchParams.get("category") || "all";
+  const size = searchParams.get("size") || "all";
+  const sort = searchParams.get("_sort") || "newest";
+  const brands = searchParams.getAll("brands");
 
   const [filters, setFilters] = useState({
-    category: initialCategory,
+    category: category || "all",
     size: "all",
-    sort: "newest",
+    _sort: "newest",
     brands: [],
   });
 
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["products", filters],
+    queryFn: fetchFilterProducts,
+  });
 
   useEffect(() => {
-    let result = [...products];
+    const query = new URLSearchParams();
 
-    // Filter by category
-    if (filters.category !== "all") {
-      result = result.filter(
-        (product) => product.category === filters.category
-      );
+    if (filters.category && filters.category !== "all") {
+      query.set("category", filters.category);
     }
 
-    // Filter by size
-    if (filters.size !== "all") {
-      result = result.filter((product) => product.sizes.includes(filters.size));
+    if (filters.size && filters.size !== "all") {
+      query.set("size", filters.size);
     }
 
-    // Filter by brand
-    if (filters.brands.length > 0) {
-      result = result.filter((product) =>
-        filters.brands.includes(product.brand)
-      );
+    if (filters._sort && filters._sort !== "newest") {
+      query.set("_sort", filters._sort);
     }
 
-    // Sort products
-    if (filters.sort === "newest") {
-      result = result.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-    } else if (filters.sort === "price-low") {
-      result = result.sort((a, b) => a.price - b.price);
-    } else if (filters.sort === "price-high") {
-      result = result.sort((a, b) => b.price - a.price);
-    }
+    filters.brands.forEach((brand) => {
+      query.append("brands", brand);
+    });
 
-    setFilteredProducts(result);
-  }, [filters]);
+    router.replace(`/products?${query.toString()}`);
+  }, [filters, router]);
 
   return (
     <main className="contianer mx-auto max-w-6xl  py-8 md:py-12">
@@ -65,9 +61,13 @@ export default function ProductsPage() {
           : "Women's Collection"}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-14">
         <ProductFilters filters={filters} setFilters={setFilters} />
-        <ProductGrid products={filteredProducts} />
+        <ProductGrid
+          products={data?.products}
+          isLoading={isLoading}
+          error={error}
+        />
       </div>
     </main>
   );
