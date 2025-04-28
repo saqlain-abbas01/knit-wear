@@ -20,3 +20,15 @@ export type Brand = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateUser = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export type ApiErrorResponse = {
+  message?: string;
+  type?: string;
+  details?: Record<string, unknown>;
+};
