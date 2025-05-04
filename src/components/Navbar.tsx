@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
@@ -9,16 +9,39 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useQuery } from "@tanstack/react-query";
+import { fecthUser } from "@/lib/api/user";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { UserProfile } from "@/lib/types";
+import { useUserStore } from "@/store/userStore";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [profile, setProfile] = useState<UserProfile>();
 
   const routes = [
     { name: "Home", path: "/" },
     { name: "Women", path: "/products?category=women" },
     { name: "Men", path: "/products?category=men" },
   ];
+
+  const setUser = useUserStore((state) => state.setUser);
+  const clearUser = useUserStore((state) => state.clearUser);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["profile"],
+    queryFn: fecthUser,
+  });
+
+  useEffect(() => {
+    if (data?.user) {
+      setUser(data.user);
+      setProfile(data.user);
+    } else if (!isLoading && !data?.user) {
+      clearUser();
+    }
+  }, [data]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
@@ -95,7 +118,21 @@ export default function Navbar() {
 
           <Button variant="ghost" size="icon">
             <Link href={"/profile"}>
-              <User className="h-5 w-5" />
+              {profile?.image ? (
+                <Avatar>
+                  <AvatarImage src={data.user.image} alt="User Avatar" />
+                  <AvatarFallback>
+                    <User className="text-gray-500" />
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <Avatar>
+                  <AvatarFallback>
+                    <User className="text-gray-500" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
+
               <span className="sr-only">Account</span>
             </Link>
           </Button>

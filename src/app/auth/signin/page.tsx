@@ -49,9 +49,9 @@ export default function LoginPage() {
   const mutation = useMutation({
     mutationFn: authUser,
     onSuccess: () => {
-      //   router.push("/");
       toast("logged In sucessfully");
       queryClient.invalidateQueries({ queryKey: ["users"] });
+      router.push("/");
     },
     onError: (error) => {
       const axiosError = error as AxiosError<ApiErrorResponse>;

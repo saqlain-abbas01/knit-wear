@@ -1,113 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileInfo from "@/components/profile/ProfileInfo";
-import OrderHistory from "@/components/profile/OrderHistory";
 import ProfileSidebar from "@/components/profile/ProfileSideBar";
-
-// Mock user data based on the provided schema
-const mockUser = {
-  name: "John Doe",
-  email: "john.doe@example.com",
-  role: "user",
-  address: {
-    street: "123 Main Street",
-    city: "New York",
-    state: "NY",
-    zipCode: "10001",
-    country: "United States",
-  },
-  createdAt: "2023-01-15T00:00:00.000Z",
-  updatedAt: "2023-06-20T00:00:00.000Z",
-};
-
-// Mock orders for the order history
-export const mockOrders = [
-  {
-    id: "ord1",
-    orderNumber: "ORD-123456",
-    date: "2024-03-15T00:00:00.000Z",
-    status: "delivered",
-    total: 89.97,
-    items: [
-      {
-        id: "item1",
-        name: "Women's Comfort Brief",
-        price: 19.99,
-        quantity: 2,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-      {
-        id: "item2",
-        name: "Men's Premium Boxer Brief",
-        price: 24.99,
-        quantity: 2,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-    ],
-  },
-  {
-    id: "ord2",
-    orderNumber: "ORD-789012",
-    date: "2024-02-28T00:00:00.000Z",
-    status: "shipped",
-    total: 45.98,
-    items: [
-      {
-        id: "item3",
-        name: "Women's Lace Thong",
-        price: 15.99,
-        quantity: 1,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-      {
-        id: "item4",
-        name: "Men's Athletic Trunk",
-        price: 22.99,
-        quantity: 1,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-      {
-        id: "item5",
-        name: "Women's Comfort Bralette",
-        price: 29.99,
-        quantity: 1,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-    ],
-  },
-  {
-    id: "ord3",
-    orderNumber: "ORD-345678",
-    date: "2024-01-10T00:00:00.000Z",
-    status: "processing",
-    total: 67.97,
-    items: [
-      {
-        id: "item6",
-        name: "Men's Classic Brief",
-        price: 18.99,
-        quantity: 1,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-      {
-        id: "item7",
-        name: "Women's Cotton Hipster",
-        price: 16.99,
-        quantity: 3,
-        image: "/placeholder.svg?height=600&width=600",
-      },
-    ],
-  },
-];
+import { useUserStore } from "@/store/userStore";
+import OrderHistory from "@/components/profile/OrderHistory";
 
 export default function ProfilePage() {
-  const [user, setUser] = useState(mockUser);
-
-  const updateUserInfo = (updatedInfo: Partial<typeof mockUser>) => {
-    setUser({ ...user, ...updatedInfo });
-  };
+  // const data = { name: "string", email: "string@gmail.com" };
+  const user = useUserStore((state) => state.user);
 
   return (
     <main className="container mx-auto max-w-6xl py-8 md:py-12">
@@ -126,11 +27,33 @@ export default function ProfilePage() {
             </TabsList>
 
             <TabsContent value="profile">
-              <ProfileInfo user={user} updateUserInfo={updateUserInfo} />
+              {user ? (
+                <ProfileInfo user={user} />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-gray-500">
+                  <span className="text-lg font-medium">
+                    You are not logged in
+                  </span>
+                  <p className="text-sm">
+                    Please sign in to view your profile information.
+                  </p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrderHistory orders={mockOrders} />
+              {user ? (
+                <OrderHistory orders={user?.orders} />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-gray-500">
+                  <span className="text-lg font-medium">
+                    You are not logged in
+                  </span>
+                  <p className="text-sm">
+                    Please sign in to view your orders information.
+                  </p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="addresses">

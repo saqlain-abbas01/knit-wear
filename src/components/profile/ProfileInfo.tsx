@@ -7,30 +7,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
-interface User {
-  name: string;
-  email: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-}
+import { ApiErrorResponse, UserProfile } from "@/lib/types";
+import {
+  focusManager,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
+import { updateUser } from "@/lib/api/user";
 
 interface ProfileInfoProps {
-  user: User;
-  updateUserInfo: (info: Partial<User>) => void;
+  user: UserProfile;
 }
 
-export default function ProfileInfo({
-  user,
-  updateUserInfo,
-}: ProfileInfoProps) {
+export default function ProfileInfo({ user }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(user);
+
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const mutation = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      toast("Profile info updated sucessfully");
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage = axiosError.response?.data?.message;
+      console.log("errorMessage", errorMessage);
+      toast(`error while updating info ${errorMessage}`);
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,14 +67,19 @@ export default function ProfileInfo({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateUserInfo(formData);
+    const { name, email, address } = formData;
+
+    const payload = { name, email, address };
+
+    mutation.mutate(payload);
+    console.log("formData", formData);
     setIsEditing(false);
     toast.success("Profile updated successfully");
   };
 
   return (
     <div className="space-y-6">
-      <div className="bg-muted/30 p-6 rounded-lg">
+      <div className="bg-muted p-6 rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Personal Information</h2>
           {!isEditing && (
@@ -127,12 +142,16 @@ export default function ProfileInfo({
         )}
       </div>
 
-      <div className="bg-muted/30 p-6 rounded-lg">
+      <div className="bg-muted p-6 rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Default Address</h2>
           {!isEditing && (
             <Button variant="outline" onClick={() => setIsEditing(true)}>
-              Edit
+              {user?.address?.street ||
+              user?.address?.city ||
+              user?.address?.zipCode
+                ? "Edit"
+                : "Add"}
             </Button>
           )}
         </div>
@@ -144,7 +163,7 @@ export default function ProfileInfo({
               <Input
                 id="address.street"
                 name="address.street"
-                value={formData.address.street}
+                value={formData?.address?.street}
                 onChange={handleChange}
               />
             </div>
@@ -155,7 +174,7 @@ export default function ProfileInfo({
                 <Input
                   id="address.city"
                   name="address.city"
-                  value={formData.address.city}
+                  value={formData?.address?.city}
                   onChange={handleChange}
                 />
               </div>
@@ -164,7 +183,7 @@ export default function ProfileInfo({
                 <Input
                   id="address.state"
                   name="address.state"
-                  value={formData.address.state}
+                  value={formData?.address?.state}
                   onChange={handleChange}
                 />
               </div>
@@ -176,7 +195,7 @@ export default function ProfileInfo({
                 <Input
                   id="address.zipCode"
                   name="address.zipCode"
-                  value={formData.address.zipCode}
+                  value={formData?.address?.zipCode}
                   onChange={handleChange}
                 />
               </div>
@@ -185,7 +204,7 @@ export default function ProfileInfo({
                 <Input
                   id="address.country"
                   name="address.country"
-                  value={formData.address.country}
+                  value={formData?.address?.country}
                   onChange={handleChange}
                 />
               </div>
@@ -208,11 +227,12 @@ export default function ProfileInfo({
         ) : (
           <div className="space-y-1">
             <p className="font-medium">{user.name}</p>
-            <p>{user.address.street}</p>
+            <p>{user.address?.street}</p>
             <p>
-              {user.address.city}, {user.address.state} {user.address.zipCode}
+              {user.address?.city}, {user.address?.state}{" "}
+              {user.address?.zipCode}
             </p>
-            <p>{user.address.country}</p>
+            <p>{user.address?.country}</p>
           </div>
         )}
       </div>

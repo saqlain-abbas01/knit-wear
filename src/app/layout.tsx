@@ -27,13 +27,13 @@ export default function RootLayout({
       <body className={`${inter.className} `}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <CartProvider>
-            <div className="bg-muted/50">
-              <Navbar />
-              <TanstackProvider>
+            <TanstackProvider>
+              <div className="bg-muted/50 overflow-x-hidden">
+                <Navbar />
                 <div className="flex-1 ">{children}</div>
-              </TanstackProvider>
-              <Footer />
-            </div>
+                <Footer />
+              </div>
+            </TanstackProvider>
             <Toaster richColors position="bottom-right" />
           </CartProvider>
         </ThemeProvider>

@@ -4,21 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ChevronRight, Package } from "lucide-react";
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  date: string;
-  status: string;
-  total: number;
-  items: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-  }[];
-}
+import { Order } from "@/lib/types";
 
 interface OrderHistoryProps {
   orders: Order[];
@@ -27,7 +13,7 @@ interface OrderHistoryProps {
 export default function OrderHistory({ orders }: OrderHistoryProps) {
   if (orders.length === 0) {
     return (
-      <div className="bg-muted/30 p-8 rounded-lg text-center">
+      <div className="bg-muted p-8 rounded-lg text-center">
         <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
         <h3 className="text-lg font-medium mb-2">No Orders Yet</h3>
         <p className="text-muted-foreground mb-6">
@@ -118,7 +104,7 @@ function getStatusVariant(status: string) {
     case "shipped":
       return "secondary";
     case "delivered":
-      return "success";
+      return "secondary";
     case "cancelled":
       return "destructive";
     default:
