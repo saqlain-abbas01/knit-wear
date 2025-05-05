@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { updateUser } from "@/lib/api/user";
+import { ImageUpload } from "./uploadImage";
 
 interface ProfileInfoProps {
   user: UserProfile;
@@ -24,6 +25,7 @@ interface ProfileInfoProps {
 export default function ProfileInfo({ user }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(user);
+  const [image, setImage] = useState<string>(user?.image || "");
 
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -65,6 +67,10 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
     }
   };
 
+  const handleImagesChange = (newImages: string) => {
+    setImage(newImages);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const { name, email, address } = formData;
@@ -80,6 +86,10 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   return (
     <div className="space-y-6">
       <div className="bg-muted p-6 rounded-lg">
+        <div>
+          <h2 className="text-lg font-medium mb-2">Profile Image</h2>
+          <ImageUpload image={image} onChange={handleImagesChange} />
+        </div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Personal Information</h2>
           {!isEditing && (
