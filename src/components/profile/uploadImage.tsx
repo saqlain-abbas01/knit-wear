@@ -22,6 +22,7 @@ export function ImageUpload({ image, onChange, onRemove }: ImageUploadProps) {
   }, []);
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("uploading image");
     const file = e.target.files?.[0];
     if (!file) {
       toast.error("No file selected");
@@ -40,18 +41,22 @@ export function ImageUpload({ image, onChange, onRemove }: ImageUploadProps) {
       toast.error(`Image exceeds 5MB limit.`);
       return;
     }
+    console.log("body file", file);
+    const formData = new FormData();
+    formData.append("images", file);
 
     try {
       const response = await fetch("http://localhost:4000/api/upload", {
         method: "POST",
-        body: file,
+        body: formData,
       });
 
       if (!response.ok) {
         throw new Error("Upload failed");
       }
       const { urls } = await response.json();
-      onChange(urls);
+      console.log("url", urls);
+      onChange(urls[0]);
     } catch (error) {
       console.error("Upload error:", error);
       toast("failed to upload");

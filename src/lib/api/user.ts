@@ -35,6 +35,7 @@ export const fecthUser = async () => {
 };
 
 export const updateUser = async (data: updatedUser) => {
+  
   try {
     const response = await api.patch(`user/update`, data, {
       withCredentials: true,

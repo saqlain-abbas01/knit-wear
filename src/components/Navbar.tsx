@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +14,17 @@ import { fecthUser } from "@/lib/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { UserProfile } from "@/lib/types";
 import { useUserStore } from "@/store/userStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile>();
 
@@ -33,6 +41,8 @@ export default function Navbar() {
     queryKey: ["profile"],
     queryFn: fecthUser,
   });
+
+  console.log("profile", profile);
 
   useEffect(() => {
     if (data?.user) {
@@ -117,29 +127,50 @@ export default function Navbar() {
           )}
 
           <Button variant="ghost" size="icon">
-            <Link href={"/profile"}>
-              {profile?.image ? (
-                <Avatar>
-                  <AvatarImage src={data.user.image} alt="User Avatar" />
-                  <AvatarFallback>
-                    <User className="text-gray-500" />
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <Avatar>
-                  <AvatarFallback>
-                    <User className="text-gray-500" />
-                  </AvatarFallback>
-                </Avatar>
-              )}
-
-              <span className="sr-only">Account</span>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  {profile?.image ? (
+                    <Avatar>
+                      <AvatarImage
+                        src={profile.image || "/placeholder.svg"}
+                        alt="User Avatar"
+                      />
+                      <AvatarFallback>
+                        <User className="text-gray-500" />
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <Avatar>
+                      <AvatarFallback>
+                        <User className="text-gray-500" />
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <span className="sr-only">Account</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {profile ? (
+                  <>
+                    <DropdownMenuItem onClick={() => router.push("/profile")}>
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem onClick={() => router.push("/auth/signin")}>
+                    Login
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Button>
 
           <Button variant="ghost" size="icon" asChild>
             <Link href="/carts">
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingBag className="h-6 w-6" />
               <span className="sr-only">Cart</span>
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                 3

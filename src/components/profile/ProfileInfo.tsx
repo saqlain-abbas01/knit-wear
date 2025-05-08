@@ -26,7 +26,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(user);
   const [image, setImage] = useState<string>(user?.image || "");
-
+  console.log("image url", image);
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -75,20 +75,29 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
     e.preventDefault();
     const { name, email, address } = formData;
 
-    const payload = { name, email, address };
+    const payload = { name, email, address, image };
 
+    console.log("payload", payload);
     mutation.mutate(payload);
-    console.log("formData", formData);
+
     setIsEditing(false);
-    toast.success("Profile updated successfully");
   };
 
   return (
     <div className="space-y-6">
       <div className="bg-muted p-6 rounded-lg">
-        <div>
-          <h2 className="text-lg font-medium mb-2">Profile Image</h2>
-          <ImageUpload image={image} onChange={handleImagesChange} />
+        <h2 className="text-lg font-medium mb-2">Profile Image</h2>
+        <div className="flex justify-between ">
+          <div>
+            <ImageUpload
+              image={image}
+              onChange={handleImagesChange}
+              onRemove={() => setImage("")}
+            />
+          </div>
+          <div>
+            <Button onClick={handleSubmit}>Save</Button>
+          </div>
         </div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Personal Information</h2>
@@ -100,7 +109,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
@@ -167,7 +176,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="address.street">Street Address</Label>
               <Input
