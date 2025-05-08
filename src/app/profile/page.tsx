@@ -11,7 +11,7 @@ export default function ProfilePage() {
   const user = useUserStore((state) => state.user);
 
   return (
-    <main className="container mx-auto max-w-6xl py-8 md:py-12">
+    <main className="container mx-auto max-w-7xl py-8 md:py-12">
       <h1 className="text-3xl font-bold mb-8">My Account</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">

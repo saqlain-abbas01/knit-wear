@@ -16,6 +16,7 @@ import { Product } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import ImageCarouselComponent from "@/components/ImageCarouselComponent";
 import { createCart } from "@/lib/api/cart";
+import { AxiosError } from "axios";
 
 const sizes = [
   { label: "XL", value: "xl" },
@@ -32,13 +33,10 @@ export default function ProductPage() {
 
   const id = params.id;
 
-  console.log("id", id);
-
   if (!id) return route.push("/");
 
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [isAdding, setIsAdding] = useState(false);
   const [open, setOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
@@ -49,8 +47,29 @@ export default function ProductPage() {
   const createMutation = useMutation({
     mutationFn: createCart,
     onSuccess: () => {
-      // Invalidate and refetch
+      toast("Added to cart", {
+        description: `${product.name} has been added to your cart`,
+        action: {
+          label: "View Cart",
+          onClick: () => route.push("/carts"),
+        },
+      });
       queryClient.invalidateQueries({ queryKey: ["todos"] });
+      addItem(product, quantity);
+    },
+    onError: (error: AxiosError) => {
+      const errorMessage = error.response?.data;
+      if (errorMessage === "Unauthorized") {
+        toast("Unauthorized", {
+          description: `Please login first to add product to carts`,
+          action: {
+            label: "Login In",
+            onClick: () => route.push("/auth/signin"),
+          },
+        });
+      } else {
+        toast.error(`Failed To create cart: ${errorMessage}`);
+      }
     },
   });
 
@@ -152,27 +171,14 @@ export default function ProductPage() {
       return;
     }
 
-    setIsAdding(true);
+    console.log("selected size:", selectedSize);
+    console.log("qauntity", quantity);
 
     createMutation.mutate({
       quantity: quantity,
       product: product.id,
-      user: product.name,
+      size: selectedSize,
     });
-
-    setTimeout(() => {
-      addItem(product, quantity);
-
-      toast("Added to cart", {
-        description: `${product.name} has been added to your cart`,
-        action: {
-          label: "View Cart",
-          onClick: () => route.push("/carts"),
-        },
-      });
-
-      setIsAdding(false);
-    }, 600);
   };
 
   return (
@@ -190,14 +196,14 @@ export default function ProductPage() {
           </div>
           {product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
-              {product.images.map((index, i) => (
+              {product.images.map((image, i) => (
                 <div
                   key={i}
                   className="aspect-square relative overflow-hidden rounded-lg border cursor-pointer hover:opacity-80"
                 >
                   <Image
                     src={(i as unknown as string) || "/placeholder.svg"}
-                    alt={`${index} thumbnail ${i + 1}`}
+                    alt={`${image} thumbnail ${i + 1}`}
                     fill
                     className="object-cover"
                   />
@@ -289,9 +295,9 @@ export default function ProductPage() {
               size="lg"
               className="flex-1 gap-2"
               onClick={handleAddToCart}
-              disabled={isAdding}
+              disabled={createMutation.isPending}
             >
-              {isAdding ? (
+              {createMutation.isPending ? (
                 <>
                   <Check className="h-5 w-5" />
                   Added to Cart

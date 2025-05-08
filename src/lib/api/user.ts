@@ -23,7 +23,6 @@ export const authUser = async (data: any) => {
 
 export const fecthUser = async () => {
   try {
-    console.log("Current cookies:", document.cookie);
     const response = await api.get("/user/profile", {
       withCredentials: true,
     });
@@ -35,7 +34,6 @@ export const fecthUser = async () => {
 };
 
 export const updateUser = async (data: updatedUser) => {
-  
   try {
     const response = await api.patch(`user/update`, data, {
       withCredentials: true,
