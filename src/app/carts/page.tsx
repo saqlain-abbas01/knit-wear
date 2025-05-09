@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { fecthCarts } from "@/lib/api/cart";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal, totalItems } = useCart();
@@ -33,7 +35,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container mx-auto max-w-6xl py-16 flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <div className="container mx-auto max-w-7xl py-16 flex flex-col items-center justify-center min-h-[60vh] text-center">
         <ShoppingBag className="h-16 w-16 text-muted-foreground mb-4" />
         <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
         <p className="text-muted-foreground mb-6">
@@ -45,7 +47,7 @@ export default function CartPage() {
       </div>
     );
   }
-
+  console.log("items", items);
   return (
     <main className="container mx-auto max-w-6xl py-8 md:py-12">
       <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
@@ -68,7 +70,7 @@ export default function CartPage() {
                   <div className="flex items-center gap-4">
                     <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
                       <Image
-                        src={item.product.image || "/placeholder.svg"}
+                        src={item.product.images[0] || "/placeholder.svg"}
                         alt={item.product.name}
                         fill
                         className="object-cover"

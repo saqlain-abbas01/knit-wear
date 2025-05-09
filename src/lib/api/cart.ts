@@ -10,3 +10,12 @@ export const createCart = async (data: any) => {
     throw error;
   }
 };
+
+export const fecthCarts = async () => {
+  try {
+    const response = await api.get("/carts");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

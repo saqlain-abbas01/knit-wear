@@ -129,7 +129,7 @@ export default function Navbar() {
           <Button variant="ghost" size="icon">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <div>
                   {profile?.image ? (
                     <Avatar>
                       <AvatarImage
@@ -148,7 +148,7 @@ export default function Navbar() {
                     </Avatar>
                   )}
                   <span className="sr-only">Account</span>
-                </Button>
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {profile ? (

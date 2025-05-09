@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { products } from "@/lib/products";
@@ -13,10 +13,11 @@ import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchProductById } from "@/lib/api/products";
 import { Product } from "@/lib/types";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import ImageCarouselComponent from "@/components/ImageCarouselComponent";
 import { createCart } from "@/lib/api/cart";
 import { AxiosError } from "axios";
+import Loading from "@/components/Loading";
+import ErrorComponent from "@/components/error";
 
 const sizes = [
   { label: "XL", value: "xl" },
@@ -32,17 +33,23 @@ export default function ProductPage() {
   const queryClient = useQueryClient();
 
   const id = params.id;
+  console.log("id:", id);
 
-  if (!id) return route.push("/");
+  if (!id || typeof id !== "string") {
+    route.push("/");
+    return null; // important: avoid rendering the rest of the component
+  }
 
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [open, setOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["product"],
-    queryFn: () => fetchProductById(id as string),
+    queryKey: ["product", id],
+    queryFn: () => fetchProductById(id),
   });
+
+  const product = data?.product as Product;
 
   const createMutation = useMutation({
     mutationFn: createCart,
@@ -73,101 +80,19 @@ export default function ProductPage() {
     },
   });
 
-  console.log("data;", data);
-  if (isLoading) {
-    return (
-      <main className="container mx-auto max-w-7xl py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-          {/* Product image skeleton */}
-          <div className="space-y-4">
-            <div className="aspect-square rounded-lg bg-muted animate-pulse" />
-            <div className="grid grid-cols-4 gap-2">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="aspect-square rounded-lg bg-muted animate-pulse"
-                />
-              ))}
-            </div>
-          </div>
+  if (isLoading) return <Loading />;
 
-          {/* Product details skeleton */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="h-8 w-3/4 bg-muted rounded animate-pulse" />
-              <div className="h-4 w-1/3 bg-muted rounded animate-pulse" />
-              <div className="h-6 w-1/4 bg-muted rounded animate-pulse mt-2" />
-            </div>
+  if (error)
+    return <ErrorComponent title={"products"} discription={"products"} />;
 
-            <div className="space-y-2">
-              <div className="h-5 w-1/4 bg-muted rounded animate-pulse" />
-              <div className="h-24 w-full bg-muted rounded animate-pulse" />
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <div className="h-5 w-1/6 bg-muted rounded animate-pulse mb-3" />
-                <div className="flex flex-wrap gap-3">
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="h-10 w-10 bg-muted rounded-md animate-pulse"
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="h-5 w-1/5 bg-muted rounded animate-pulse mb-3" />
-                <div className="flex items-center space-x-2">
-                  <div className="h-10 w-10 bg-muted rounded-md animate-pulse" />
-                  <div className="h-6 w-8 bg-muted rounded animate-pulse" />
-                  <div className="h-10 w-10 bg-muted rounded-md animate-pulse" />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <div className="h-12 flex-1 bg-muted rounded-md animate-pulse" />
-              <div className="h-12 flex-1 bg-muted rounded-md animate-pulse" />
-            </div>
-          </div>
-        </div>
-      </main>
-    );
-  }
-  if (error) {
-    return (
-      <div className="w-full h-dvh flex justify-center items-center">
-        <Alert variant="destructive" className="my-8">
-          <AlertCircle className="h-5 w-5" />
-          <AlertTitle className="ml-2">Error loading product</AlertTitle>
-          <AlertDescription className="ml-2">
-            We couldn't load the product. Please try again later or contact
-            support if the problem persists.
-          </AlertDescription>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </Button>
-        </Alert>
-      </div>
-    );
-  }
-
-  const product = data?.product as Product;
-
-  const isOnSale = product.discountPercentage > 0;
+  const isOnSale = product?.discountPercentage > 0;
   const originalPrice = isOnSale
-    ? product.price / (1 - product.discountPercentage / 100)
-    : product.price;
+    ? product?.price / (1 - product?.discountPercentage / 100)
+    : product?.price;
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast("Please select a size");
+      toast("Please select a size first");
       return;
     }
 
@@ -187,16 +112,16 @@ export default function ProductPage() {
         <div className="space-y-4" onClick={() => setOpen(true)}>
           <div className="h-full relative overflow-hidden rounded-lg">
             <Image
-              src={product.images[0] || "/placeholder.svg"}
-              alt={product.name}
+              src={product?.images[0] || "/placeholder.svg"}
+              alt={product?.name}
               fill
               className="object-cover"
               priority
             />
           </div>
-          {product.images.length > 1 && (
+          {product?.images?.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
-              {product.images.map((image, i) => (
+              {product?.images.map((image, i) => (
                 <div
                   key={i}
                   className="aspect-square relative overflow-hidden rounded-lg border cursor-pointer hover:opacity-80"
@@ -219,8 +144,8 @@ export default function ProductPage() {
         />
         <div className="space-y-6 ">
           <div>
-            <h1 className="text-3xl font-bold">{product.name}</h1>
-            <p className="text-muted-foreground mt-1">{product.brand}</p>
+            <h1 className="text-3xl font-bold">{product?.name}</h1>
+            <p className="text-muted-foreground mt-1">{product?.brand}</p>
             {isOnSale ? (
               <>
                 <span className="text-muted-foreground line-through">
@@ -231,13 +156,13 @@ export default function ProductPage() {
                 </span>
               </>
             ) : (
-              <span className="font-medium">${product.price.toFixed(2)}</span>
+              <span className="font-medium">${product?.price.toFixed(2)}</span>
             )}
           </div>
 
           <div className="space-y-2">
             <h3 className="font-medium">Description</h3>
-            <p className="text-muted-foreground">{product.description}</p>
+            <p className="text-muted-foreground">{product?.description}</p>
           </div>
 
           <div className="space-y-4">
@@ -248,7 +173,7 @@ export default function ProductPage() {
                 onValueChange={setSelectedSize}
                 className="flex flex-wrap gap-3"
               >
-                {sizes.map((size) => (
+                {sizes?.map((size) => (
                   <div key={size.value} className="flex items-center space-x-2">
                     <RadioGroupItem
                       value={size.value}
