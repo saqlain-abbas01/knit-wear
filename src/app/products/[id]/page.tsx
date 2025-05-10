@@ -29,11 +29,9 @@ const sizes = [
 export default function ProductPage() {
   const params = useParams();
   const route = useRouter();
-  const { addItem } = useCart();
   const queryClient = useQueryClient();
 
   const id = params.id;
-  console.log("id:", id);
 
   if (!id || typeof id !== "string") {
     route.push("/");
@@ -55,14 +53,13 @@ export default function ProductPage() {
     mutationFn: createCart,
     onSuccess: () => {
       toast("Added to cart", {
-        description: `${product.name} has been added to your cart`,
+        description: `${product.title} has been added to your cart`,
         action: {
           label: "View Cart",
           onClick: () => route.push("/carts"),
         },
       });
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      addItem(product, quantity);
+      queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error: AxiosError) => {
       const errorMessage = error.response?.data;
@@ -95,9 +92,6 @@ export default function ProductPage() {
       toast("Please select a size first");
       return;
     }
-
-    console.log("selected size:", selectedSize);
-    console.log("qauntity", quantity);
 
     createMutation.mutate({
       quantity: quantity,

@@ -26,16 +26,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} `}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <CartProvider>
-            <TanstackProvider>
-              <div className="bg-muted/50 overflow-x-hidden">
+          <TanstackProvider>
+            <CartProvider>
+              <div className="bg-muted/50">
                 <Navbar />
-                <div className="flex-1 ">{children}</div>
+                <div className="flex-1 overflow-x-hidden">{children}</div>
                 <Footer />
               </div>
-            </TanstackProvider>
-            <Toaster richColors position="bottom-right" />
-          </CartProvider>
+            </CartProvider>
+          </TanstackProvider>
+          <Toaster richColors position="bottom-right" />
         </ThemeProvider>
       </body>
     </html>

@@ -1,234 +1,359 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Minus, Plus, ArrowLeft, ShoppingBag } from "lucide-react";
-import { useCart } from "@/context/cart-context";
+import { Minus, Plus, ArrowLeft, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { fecthCarts } from "@/lib/api/cart";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteCart, fecthCarts, updateCart } from "@/lib/api/cart";
+import type { CartItem } from "@/lib/types";
+import CartPageLoading from "@/components/CartLoadingPage";
+import { useDebouncedCallback } from "@/lib/utils";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, subtotal, totalItems } = useCart();
-  const [couponCode, setCouponCode] = useState("");
+  const queryClient = useQueryClient();
+  const [carts, setCarts] = useState<CartItem[]>([]);
 
-  // Shipping cost could be calculated based on location, weight, etc.
-  const shippingCost = 5.99;
-  const tax = subtotal * 0.08; // 8% tax rate
-  const total = subtotal + shippingCost + tax;
-
-  const handleApplyCoupon = () => {
-    if (!couponCode.trim()) {
-      toast.error("Please enter a coupon code");
-      return;
-    }
-
-    // This would typically check against valid coupon codes in a database
-    toast.error("Invalid coupon code", {
-      description: "The coupon code you entered is not valid or has expired.",
-    });
+  const sizeMap = {
+    xs: {
+      label: "Extra Small",
+      color: "bg-violet-100 text-violet-700 border-violet-200",
+    },
+    s: {
+      label: "Small",
+      color: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    },
+    m: {
+      label: "Medium",
+      color: "bg-amber-100 text-amber-700 border-amber-200",
+    },
+    l: { label: "Large", color: "bg-rose-100 text-rose-700 border-rose-200" },
+    xl: {
+      label: "Extra Large",
+      color: "bg-sky-100 text-sky-700 border-sky-200",
+    },
   };
 
-  if (items.length === 0) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["carts"],
+    queryFn: () => fecthCarts(),
+  });
+
+  useEffect(() => {
+    if (data?.cart) {
+      setCarts(data.cart);
+    }
+  }, [data]);
+
+  const updateMutation = useMutation({
+    mutationFn: updateCart,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["carts"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to update quantity. Please try again.");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteCart,
+    onSuccess: () => {
+      toast.success("Item removed from cart");
+      queryClient.invalidateQueries({ queryKey: ["carts"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to remove item. Please try again.");
+    },
+  });
+
+  const subtotal = carts.reduce(
+    (acc, item) => acc + item.product.price * item.quantity,
+    0
+  );
+  const totalItems = carts.reduce((acc, item) => acc + item.quantity, 0);
+  const shippingCost = 5.99;
+  const tax = subtotal * 0.08;
+  const total = subtotal + shippingCost + tax;
+
+  const debouncedUpdate = useDebouncedCallback(
+    (cartId: string, quantity: number) => {
+      updateMutation.mutate({ cartId, quantity });
+    },
+    500
+  );
+
+  const updateCartQuantityOptimistic = (
+    cartId: string,
+    productId: string,
+    quantity: number
+  ) => {
+    if (quantity < 1) return;
+
+    setCarts((prev) =>
+      prev.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item
+      )
+    );
+    debouncedUpdate(cartId, quantity);
+  };
+
+  if (isLoading) return <CartPageLoading />;
+
+  if (error)
     return (
-      <div className="container mx-auto max-w-7xl py-16 flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <ShoppingBag className="h-16 w-16 text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
-        <p className="text-muted-foreground mb-6">
-          Looks like you haven't added any products to your cart yet.
-        </p>
-        <Button asChild>
-          <Link href="/products">Continue Shopping</Link>
-        </Button>
+      <div className="container mx-auto max-w-7xl py-16 px-4 flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="bg-red-50 text-red-700 p-6 rounded-lg max-w-md">
+          <h2 className="text-xl font-semibold mb-2">Error Loading Cart</h2>
+          <p>We couldn't fetch your cart items. Please try again later.</p>
+          <Button variant="outline" className="mt-4" asChild>
+            <Link href="/products">Browse Products</Link>
+          </Button>
+        </div>
+      </div>
+    );
+
+  if (carts.length === 0) {
+    return (
+      <div className="container mx-auto max-w-7xl py-16 px-4 flex flex-col items-center justify-center min-h-[70vh] text-center">
+        <div className="bg-muted p-10 rounded-xl max-w-md">
+          <div className="bg-background rounded-full p-4 w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+            <ShoppingBag className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h1 className="text-2xl font-bold mb-3">Your cart is empty</h1>
+          <p className="text-muted-foreground mb-8">
+            Looks like you haven't added any products to your cart yet.
+          </p>
+          <Button size="lg" asChild>
+            <Link href="/products">Browse Collection</Link>
+          </Button>
+        </div>
       </div>
     );
   }
-  console.log("items", items);
+
   return (
-    <main className="container mx-auto max-w-6xl py-8 md:py-12">
-      <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+    <main className="container mx-auto max-w-7xl py-10 md:py-16 px-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10">
+        <div>
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+          <p className="text-muted-foreground mt-1">
+            You have {totalItems} {totalItems === 1 ? "item" : "items"} in your
+            cart
+          </p>
+        </div>
+        <Button variant="outline" asChild className="gap-2 mt-4 md:mt-0">
+          <Link href="/products">
+            <ArrowLeft className="h-4 w-4" /> Continue Shopping
+          </Link>
+        </Button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <div className="hidden md:grid grid-cols-12 gap-4 mb-4 text-sm font-medium text-muted-foreground">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="hidden md:grid grid-cols-12  gap-4 mb-2 text-sm font-medium text-muted-foreground bg-muted px-6 py-4 rounded-lg">
             <div className="col-span-6">Product</div>
             <div className="col-span-2 text-center">Price</div>
             <div className="col-span-2 text-center">Quantity</div>
-            <div className="col-span-2 text-right">Total</div>
+            <div className="col-span-2 text-center">Total</div>
           </div>
 
-          <Separator className="mb-6 hidden md:block" />
-
-          {items.map((item) => (
-            <div key={item.product.id} className="mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                <div className="col-span-1 md:col-span-6">
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.product.images[0] || "/placeholder.svg"}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{item.product.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {item.product.category} | {item.product.brand}
-                      </p>
-                      <button
-                        onClick={() => {
-                          removeItem(item.product.id);
-                          toast.success("Item removed from cart");
-                        }}
-                        className="text-sm text-red-500 flex items-center gap-1 mt-1 md:hidden"
-                      >
-                        <Trash2 className="h-3 w-3" /> Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-span-1 md:col-span-2 md:text-center">
-                  <div className="flex items-center justify-between md:block">
-                    <span className="text-sm font-medium md:hidden">
-                      Price:
-                    </span>
-                    <span>${item.product.price.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                <div className="col-span-1 md:col-span-2 md:text-center">
-                  <div className="flex items-center justify-between md:justify-center">
-                    <span className="text-sm font-medium md:hidden">
-                      Quantity:
-                    </span>
-                    <div className="flex items-center">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-r-none"
-                        onClick={() =>
-                          updateQuantity(item.product.id, item.quantity - 1)
-                        }
-                      >
-                        <Minus className="h-3 w-3" />
-                        <span className="sr-only">Decrease quantity</span>
-                      </Button>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateQuantity(
-                            item.product.id,
-                            Number.parseInt(e.target.value) || 1
-                          )
-                        }
-                        className="h-8 w-12 rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-l-none"
-                        onClick={() =>
-                          updateQuantity(item.product.id, item.quantity + 1)
-                        }
-                      >
-                        <Plus className="h-3 w-3" />
-                        <span className="sr-only">Increase quantity</span>
-                      </Button>
+          {carts.map((item, index) => (
+            <Card key={index} className="overflow-hidden border-muted/40">
+              <CardContent className="p-0">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 items-center ">
+                  <div className="col-span-1 md:col-span-6">
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-24 w-24 rounded-md overflow-hidden flex-shrink-0 bg-muted/20">
+                        <Image
+                          src={item.product.images?.[0] || "/placeholder.svg"}
+                          alt={item.product.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="font-medium text-base">
+                          {item.product.title}
+                        </h3>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{item.product.category}</span>
+                          <span>•</span>
+                          <span>{item.product.brand}</span>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={`${sizeMap[item.size]?.color} border`}
+                        >
+                          {sizeMap[item.size]?.label}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="col-span-1 md:col-span-2 md:text-right">
-                  <div className="flex items-center justify-between md:block">
+                  <div className="col-span-1 md:col-span-2 md:text-center ">
+                    <div className="flex items-center justify-between md:block">
+                      <span className="text-sm font-medium md:hidden">
+                        Price:
+                      </span>
+                      <span className="font-medium">
+                        ${item.product.price.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 md:col-span-2 md:text-center ">
+                    <div className="flex items-center justify-between md:justify-center">
+                      <span className="text-sm font-medium md:hidden">
+                        Quantity:
+                      </span>
+                      <div className="flex items-center border rounded-md overflow-hidden">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-none"
+                          onClick={() =>
+                            updateCartQuantityOptimistic(
+                              item.id,
+                              item.product.id,
+                              item.quantity - 1
+                            )
+                          }
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          readOnly
+                          className="h-9 w-12 rounded-none text-center border-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-none"
+                          onClick={() =>
+                            updateCartQuantityOptimistic(
+                              item.id,
+                              item.product.id,
+                              item.quantity + 1
+                            )
+                          }
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 md:col-span-2 md:text-right  flex md:block ">
                     <span className="text-sm font-medium md:hidden">
                       Total:
                     </span>
-                    <span className="font-medium">
+                    <span className="font-medium text-base">
                       ${(item.product.price * item.quantity).toFixed(2)}
                     </span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      removeItem(item.product.id);
-                      toast.success("Item removed from cart");
-                    }}
-                    className="text-sm text-red-500 hidden md:flex md:items-center md:gap-1 md:mt-1 md:ml-auto md:w-fit"
-                  >
-                    <Trash2 className="h-3 w-3" /> Remove
-                  </button>
-                </div>
-              </div>
-              <Separator className="mt-6 mb-6" />
-            </div>
-          ))}
 
-          <div className="flex items-center justify-between mt-8">
-            <Button variant="outline" asChild className="gap-2">
-              <Link href="/products">
-                <ArrowLeft className="h-4 w-4" /> Continue Shopping
-              </Link>
-            </Button>
-          </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-red-600 transition-colors ml-auto "
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Remove item</span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Remove Item</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to remove "
+                            {item.product.title}" from your cart?
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="flex justify-end gap-2 mt-4">
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                            <Button
+                              variant="destructive"
+                              onClick={() => {
+                                deleteMutation.mutate(item.id);
+                              }}
+                              disabled={deleteMutation.isPending}
+                            >
+                              Remove
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-muted/30 rounded-lg p-6">
-            <h2 className="text-lg font-medium mb-4">Order Summary</h2>
-
-            <div className="space-y-3 text-sm">
+          <Card className="md:mt-14">
+            <CardHeader className="pb-3">
+              <CardTitle>Order Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  Subtotal ({totalItems} items)
+                  Subtotal ({totalItems} {totalItems === 1 ? "item" : "items"})
                 </span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping</span>
-                <span>${shippingCost.toFixed(2)}</span>
+                <span className="font-medium">${shippingCost.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span className="text-muted-foreground">Tax (8%)</span>
+                <span className="font-medium">${tax.toFixed(2)}</span>
               </div>
 
-              <div className="pt-3 mt-3 border-t">
-                <div className="flex justify-between font-medium">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
+              <Separator className="my-2" />
 
-            <div className="mt-6 space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Coupon code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                />
-                <Button
-                  variant="outline"
-                  className="shrink-0"
-                  onClick={handleApplyCoupon}
-                >
-                  Apply
-                </Button>
+              <div className="flex justify-between text-base font-semibold pt-2">
+                <span>Total</span>
+                <span>${total.toFixed(2)}</span>
               </div>
-
-              <Button className="w-full" asChild>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" size="lg" asChild>
                 <Link href="/checkout">Proceed to Checkout</Link>
               </Button>
-            </div>
-          </div>
+            </CardFooter>
+          </Card>
         </div>
       </div>
     </main>

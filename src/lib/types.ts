@@ -8,7 +8,7 @@ export interface Product {
   stock: number;
   images: [string, ...string[]];
   category: "men" | "women";
-  sizes: string[];
+  size: "xl" | "xs" | "s" | "m" | "l";
   colors: string[];
   brand: string;
 }
@@ -73,4 +73,14 @@ export type updatedUser = {
   name: string;
   email: string;
   address: Address;
+};
+
+export type CartItem = {
+  id: string;
+  product: Product;
+  quantity: number;
+  size: "xl" | "xs" | "s" | "m" | "l";
+  user: string;
+  createdAt: string;
+  updatedAt: string;
 };

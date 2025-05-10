@@ -4,6 +4,11 @@ import type React from "react";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
+import { useMutation } from "@tanstack/react-query";
+import { updateCart } from "@/lib/api/cart";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import TanstackProvider from "@/lib/provider/queryprovider";
 
 export type CartItem = {
   product: Product;
@@ -24,6 +29,24 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+
+  const updateMutation = useMutation({
+    mutationFn: updateCart,
+    onSuccess: () => {
+      toast("Added to cart");
+      // queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error: AxiosError) => {
+      const errorMessage = error.response?.data;
+      if (errorMessage === "Unauthorized") {
+        toast("Unauthorized", {
+          description: `Please login first to add product to carts`,
+        });
+      } else {
+        toast.error(`Failed To update qauntity: ${errorMessage}`);
+      }
+    },
+  });
 
   // Load cart from localStorage on initial render
   useEffect(() => {
@@ -49,14 +72,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (existingItem) {
-        // If item already exists, update quantity
         return prevItems.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        // If item doesn't exist, add it
         return [...prevItems, { product, quantity }];
       }
     });
@@ -79,6 +100,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         item.product.id === productId ? { ...item, quantity } : item
       )
     );
+
+    const product = items.filter((item) => item.product.id === productId);
+    console.log("filter product", product);
+    updateMutation.mutate(product);
   };
 
   const clearCart = () => {
