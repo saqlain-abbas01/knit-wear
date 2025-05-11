@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface Product {
   id: string;
   title: string;
@@ -57,6 +59,7 @@ export interface Order {
 }
 
 export type UserProfile = {
+  id?: string;
   name: string;
   email: string;
   password: Buffer;
@@ -83,4 +86,29 @@ export type CartItem = {
   user: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export const shippingSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email"),
+  phone: z.string().min(10, "Phone number is too short"),
+  street: z.string().min(1, "Street is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid zip code"),
+});
+
+export type ShippingFormValues = z.infer<typeof shippingSchema>;
+
+type cartProduct = {
+  id: String;
+};
+
+export type createProduct = {
+  items: [
+    {
+      id: cartProduct;
+    }
+  ];
 };

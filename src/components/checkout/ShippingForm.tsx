@@ -2,12 +2,10 @@
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 import { useCheckout } from "@/context/checkout-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -24,26 +22,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { ShippingFormValues, shippingSchema } from "@/lib/types";
 
 interface ShippingFormProps {
   onNext: () => void;
+  handleAddress: (values: ShippingFormValues) => void;
 }
 
-const shippingSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email"),
-  phone: z.string().min(10, "Phone number is too short"),
-  street: z.string().min(1, "Street is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid zip code"),
-  country: z.string().min(1, "Country is required"),
-});
-
-type ShippingFormValues = z.infer<typeof shippingSchema>;
-
-export default function ShippingForm({ onNext }: ShippingFormProps) {
+export default function ShippingForm({
+  onNext,
+  handleAddress,
+}: ShippingFormProps) {
   const { addressInfo, updateAddressInfo } = useCheckout();
 
   const form = useForm<ShippingFormValues>({
@@ -53,6 +42,7 @@ export default function ShippingForm({ onNext }: ShippingFormProps) {
 
   const onSubmit = (values: ShippingFormValues) => {
     updateAddressInfo(values);
+    handleAddress(values);
     toast.success("Shipping information saved");
     onNext();
   };
@@ -170,38 +160,6 @@ export default function ShippingForm({ onNext }: ShippingFormProps) {
                     <FormLabel>Zip Code</FormLabel>
                     <FormControl>
                       <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Controller
-                        control={form.control}
-                        name="country"
-                        render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select country" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="US">United States</SelectItem>
-                              <SelectItem value="CA">Canada</SelectItem>
-                              <SelectItem value="UK">United Kingdom</SelectItem>
-                              <SelectItem value="AU">Australia</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

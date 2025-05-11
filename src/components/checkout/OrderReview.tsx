@@ -73,7 +73,7 @@ export default function OrderReview({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-muted/30 p-6 rounded-lg">
+        <div className="bg-muted p-6 rounded-lg">
           <h2 className="text-lg font-medium mb-2">Shipping Information</h2>
           <div className="text-sm space-y-1">
             <p className="font-medium">
@@ -116,7 +116,7 @@ export default function OrderReview({
             <div key={item.product.id} className="flex gap-4">
               <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
                 <Image
-                  src={item.product.image || "/placeholder.svg"}
+                  src={item.product.images[0] || "/placeholder.svg"}
                   alt={item.product.name}
                   fill
                   className="object-cover"

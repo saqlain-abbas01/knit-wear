@@ -18,6 +18,7 @@ import { createCart } from "@/lib/api/cart";
 import { AxiosError } from "axios";
 import Loading from "@/components/Loading";
 import ErrorComponent from "@/components/error";
+import { useCartStore } from "@/store/cartStore";
 
 const sizes = [
   { label: "XL", value: "xl" },
@@ -30,6 +31,8 @@ export default function ProductPage() {
   const params = useParams();
   const route = useRouter();
   const queryClient = useQueryClient();
+
+  const cartUnseen = useCartStore((state) => state.markCartUnseen);
 
   const id = params.id;
 
@@ -59,6 +62,7 @@ export default function ProductPage() {
           onClick: () => route.push("/carts"),
         },
       });
+      cartUnseen();
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error: AxiosError) => {

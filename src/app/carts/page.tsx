@@ -31,10 +31,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useCartStore } from "@/store/cartStore";
 
 export default function CartPage() {
   const queryClient = useQueryClient();
   const [carts, setCarts] = useState<CartItem[]>([]);
+  const { setStoreCarts, setSubtotal, setTotalItems, markCartSeen } =
+    useCartStore();
+  let subtotal = 0;
+  let totalItems = 0;
 
   const sizeMap = {
     xs: {
@@ -64,12 +69,14 @@ export default function CartPage() {
   useEffect(() => {
     if (data?.cart) {
       setCarts(data.cart);
+      markCartSeen();
     }
   }, [data]);
 
   const updateMutation = useMutation({
     mutationFn: updateCart,
     onSuccess: () => {
+      setStoreCarts(carts);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error) => {
@@ -88,11 +95,17 @@ export default function CartPage() {
     },
   });
 
-  const subtotal = carts.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
-    0
-  );
-  const totalItems = carts.reduce((acc, item) => acc + item.quantity, 0);
+  useEffect(() => {
+    subtotal = carts.reduce(
+      (acc, item) => acc + item.product.price * item.quantity,
+      0
+    );
+    totalItems = carts.reduce((acc, item) => acc + item.quantity, 0);
+    setStoreCarts(carts);
+    setSubtotal(subtotal);
+    setTotalItems(totalItems);
+  }, [carts, setSubtotal, setTotalItems]);
+
   const shippingCost = 5.99;
   const tax = subtotal * 0.08;
   const total = subtotal + shippingCost + tax;
@@ -321,7 +334,7 @@ export default function CartPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="md:mt-14">
+          <Card className="md:mt-16">
             <CardHeader className="pb-3">
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>

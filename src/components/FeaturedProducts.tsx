@@ -15,7 +15,7 @@ export default function FeaturedProducts() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="space-y-3">
             <Skeleton className="w-full aspect-square rounded-lg" />
@@ -37,7 +37,7 @@ export default function FeaturedProducts() {
     );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {data?.recentProducts?.map((product: Product) => {
         const isOnSale = product.discountPercentage > 0;
         const originalPrice = isOnSale

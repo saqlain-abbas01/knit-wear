@@ -13,7 +13,7 @@ export default function OrderComplete() {
   return (
     <div className="text-center py-8 space-y-6">
       <div className="flex justify-center">
-        <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
+        <div className="h-24 w-24 rounded-full bg-primary flex items-center justify-center">
           <CheckCircle className="h-12 w-12 text-primary" />
         </div>
       </div>

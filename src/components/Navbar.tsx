@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import {
+  Menu,
+  Search,
+  ShoppingBag,
+  ShoppingCartIcon,
+  User,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,12 +28,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useCartStore } from "@/store/cartStore";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile>();
+
+  const carts = useCartStore((state) => state.storeCarts);
+  const cartSeen = useCartStore((state) => state.cartSeen);
+  console.log("carts", carts);
+  console.log("cart seen", cartSeen);
 
   const routes = [
     { name: "Home", path: "/" },
@@ -36,6 +49,7 @@ export default function Navbar() {
 
   const setUser = useUserStore((state) => state.setUser);
   const clearUser = useUserStore((state) => state.clearUser);
+  const markCartSeen = useCartStore((state) => state.markCartSeen);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["profile"],
@@ -170,11 +184,14 @@ export default function Navbar() {
 
           <Button variant="ghost" size="icon" asChild>
             <Link href="/carts">
-              <ShoppingBag className="h-6 w-6" />
-              <span className="sr-only">Cart</span>
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
-                3
-              </span>
+              <div className="relative " onClick={() => markCartSeen()}>
+                <ShoppingCartIcon className="w-6 h-6" />
+                {!cartSeen && carts.length > 0 && (
+                  <span className="absolute -top-3 left-4 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+                    {carts.length}
+                  </span>
+                )}
+              </div>
             </Link>
           </Button>
         </div>
