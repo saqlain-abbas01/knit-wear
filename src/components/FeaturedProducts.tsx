@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRecentProducts } from "@/lib/api/products";
-import { Product } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { Button } from "./ui/button";
+import ProductCart from "./ProductCart";
 
 export default function FeaturedProducts() {
   const { data, isLoading, error } = useQuery({
@@ -29,72 +29,31 @@ export default function FeaturedProducts() {
     );
   }
 
-  if (error)
+  if (error) {
     return (
-      <div className="w-full h-full flex justify-center items-center">
-        Failed to load products.
+      <div className="w-full h-full flex flex-col justify-center items-center gap-4 p-8 text-center">
+        <AlertCircle className="h-12 w-12 text-destructive" />
+        <h3 className="text-xl font-semibold">Unable to load products</h3>
+        <p className="text-muted-foreground max-w-md">
+          {error instanceof Error
+            ? error.message
+            : "There was a problem loading the products. Please try again."}
+        </p>
+        <Button
+          onClick={() => window.location.reload()}
+          variant="outline"
+          className="mt-2"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Try again
+        </Button>
       </div>
     );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {data?.recentProducts?.map((product: Product) => {
-        const isOnSale = product.discountPercentage > 0;
-        const originalPrice = isOnSale
-          ? product.price / (1 - product.discountPercentage / 100)
-          : product.price;
-
-        return (
-          <Link
-            key={product.id}
-            href={`/products/${product.id}`}
-            className="group"
-          >
-            <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-              <Image
-                src={`${product.images?.[0]}` || "/placeholder.svg"}
-                alt={product.title}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
-              />
-              {isOnSale && (
-                <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs font-medium px-2 py-1 rounded">
-                  SALE
-                </div>
-              )}
-            </div>
-            <div className="mt-3 space-y-1">
-              <p className="text-sm text-muted-foreground">{product.brand}</p>
-              <h3 className="font-medium">{product.title}</h3>
-              <div className="flex items-center gap-2">
-                {isOnSale ? (
-                  <>
-                    <span className="text-muted-foreground line-through">
-                      ${originalPrice.toFixed(2)}
-                    </span>
-                    <span className="font-medium text-rose-600">
-                      ${product.price.toFixed(2)}
-                    </span>
-                  </>
-                ) : (
-                  <span className="font-medium">
-                    ${product.price.toFixed(2)}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {product.category}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {product.description}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Stock: {product.stock}
-              </p>
-            </div>
-          </Link>
-        );
-      })}
+      <ProductCart products={data.recentProducts} />
     </div>
   );
 }

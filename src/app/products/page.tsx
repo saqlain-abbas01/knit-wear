@@ -52,7 +52,7 @@ export default function ProductsPage() {
   }, [filters, router]);
 
   return (
-    <main className="contianer mx-auto max-w-6xl  py-8 md:py-12">
+    <main className="contianer mx-auto max-w-7xl  py-8 md:py-12">
       <h1 className="text-3xl font-bold tracking-tighter mb-8">
         {filters.category === "all"
           ? "All Products"

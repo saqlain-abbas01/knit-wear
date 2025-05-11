@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { products } from "@/lib/products";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Heart, ShoppingBag, Check, AlertCircle } from "lucide-react";
-import { useCart } from "@/context/cart-context";
 import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchProductById } from "@/lib/api/products";
@@ -19,6 +17,9 @@ import { AxiosError } from "axios";
 import Loading from "@/components/Loading";
 import ErrorComponent from "@/components/error";
 import { useCartStore } from "@/store/cartStore";
+import { Separator } from "@/components/ui/separator";
+import RelatedProduct from "@/components/RelatedProduct";
+import { addWishList, fetchWishList } from "@/lib/api/wishlist";
 
 const sizes = [
   { label: "XL", value: "xl" },
@@ -29,12 +30,20 @@ const sizes = [
 
 export default function ProductPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const route = useRouter();
   const queryClient = useQueryClient();
 
+  const id = params.id;
+  const category = searchParams.get("category");
+
+  const [filters, setFilters] = useState({
+    category: category,
+  });
+
   const cartUnseen = useCartStore((state) => state.markCartUnseen);
 
-  const id = params.id;
+  console.log("category", category);
 
   if (!id || typeof id !== "string") {
     route.push("/");
@@ -44,11 +53,25 @@ export default function ProductPage() {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [open, setOpen] = useState(false);
+  const [wishList, setWishList] = useState<Product[]>();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["product", id],
     queryFn: () => fetchProductById(id),
   });
+
+  const { data: wishlist } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: () => fetchWishList(),
+  });
+
+  useEffect(() => {
+    if (wishlist?.data) {
+      setWishList(wishlist?.data);
+    }
+  }, [wishlist]);
+
+  console.log("wishlist", wishList);
 
   const product = data?.product as Product;
 
@@ -77,6 +100,35 @@ export default function ProductPage() {
         });
       } else {
         toast.error(`Failed To create cart: ${errorMessage}`);
+      }
+    },
+  });
+
+  const createWishListMutation = useMutation({
+    mutationFn: addWishList,
+    onSuccess: (data) => {
+      console.log("response message from wishlist", data.message);
+      toast.success(data.message, {
+        action: {
+          label: "View Wishlist",
+          onClick: () => route.push("/carts"),
+        },
+      });
+      cartUnseen();
+      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+    },
+    onError: (error: AxiosError) => {
+      const errorMessage = error.response?.data;
+      if (errorMessage === "Unauthorized") {
+        toast.error("Unauthorized", {
+          description: `Please login first to add product to wishlist`,
+          action: {
+            label: "Login In",
+            onClick: () => route.push("/auth/signin"),
+          },
+        });
+      } else {
+        toast.error(`Failed To add product to wishlist try again`);
       }
     },
   });
@@ -232,12 +284,36 @@ export default function ProductPage() {
                 </>
               )}
             </Button>
-            <Button size="lg" variant="outline" className="gap-2">
-              <Heart className="h-5 w-5" />
-              Add to Wishlist
+            <Button
+              size="lg"
+              variant="outline"
+              className="gap-2"
+              onClick={() => {
+                createWishListMutation.mutate(product.id);
+              }}
+            >
+              <Heart
+                className={`h-5 w-5 ${
+                  wishList?.some((item: Product) => item.id === product.id)
+                    ? "text-red-500 fill-red-500"
+                    : ""
+                }`}
+              />
+              {wishList?.some((item: Product) => item.id === product.id)
+                ? "Wishlisted"
+                : "Add to Wishlist"}
             </Button>
           </div>
         </div>
+      </div>
+      <div className="py-8">
+        <Separator />
+      </div>
+      <div>
+        <div>
+          <h1 className="font-medium text-2xl py-4">You may also like</h1>
+        </div>
+        <RelatedProduct filters={filters} />
       </div>
     </main>
   );

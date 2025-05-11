@@ -5,6 +5,7 @@ import ProfileInfo from "@/components/profile/ProfileInfo";
 import ProfileSidebar from "@/components/profile/ProfileSideBar";
 import { useUserStore } from "@/store/userStore";
 import OrderHistory from "@/components/profile/OrderHistory";
+import WishList from "@/components/WishList";
 
 export default function ProfilePage() {
   // const data = { name: "string", email: "string@gmail.com" };
@@ -66,10 +67,7 @@ export default function ProfilePage() {
             </TabsContent>
 
             <TabsContent value="wishlist">
-              <div className="bg-muted/30 p-6 rounded-lg">
-                <h2 className="text-lg font-medium mb-4">Wishlist</h2>
-                <p className="text-muted-foreground">Your wishlist is empty.</p>
-              </div>
+              <WishList />
             </TabsContent>
           </Tabs>
         </div>

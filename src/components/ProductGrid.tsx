@@ -6,6 +6,7 @@ import type { Product } from "@/lib/types";
 import { AlertCircle, ShoppingBag } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import ProductCart from "./ProductCart";
 
 interface ProductGridProps {
   products: Product[];
@@ -78,58 +79,7 @@ export default function ProductGrid({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {products.map((product) => {
-        const isOnSale = product.discountPercentage > 0;
-        const originalPrice = isOnSale
-          ? product.price / (1 - product.discountPercentage / 100)
-          : product.price;
-        return (
-          <Link
-            key={product.id}
-            href={`/products/${product.id}`}
-            className="group"
-          >
-            <div className="aspect-square relative overflow-hidden rounded-lg bg-muted">
-              <Image
-                src={product.images?.[0] || "/placeholder.svg"}
-                alt={product.title}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
-              />
-              {isOnSale && (
-                <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs font-medium px-2 py-1 rounded">
-                  SALE
-                </div>
-              )}
-            </div>
-            <div className="mt-3 space-y-1">
-              <p className="text-sm text-muted-foreground">{product.brand}</p>
-              <h3 className="font-medium">{product.name || product.title}</h3>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2">
-                  {isOnSale ? (
-                    <>
-                      <span className="text-muted-foreground line-through">
-                        ${originalPrice.toFixed(2)}
-                      </span>
-                      <span className="font-medium text-rose-600">
-                        ${product.price.toFixed(2)}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="font-medium">
-                      ${product.price.toFixed(2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {product.category}
-              </p>
-            </div>
-          </Link>
-        );
-      })}
+      <ProductCart products={products} />
     </div>
   );
 }

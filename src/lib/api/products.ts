@@ -19,5 +19,6 @@ export const fetchFilterProducts = async ({ queryKey }: any) => {
   const response = await api.get("/products", {
     params: { ...filters },
   });
+  console.log("filtered products", response.data);
   return response.data;
 };
