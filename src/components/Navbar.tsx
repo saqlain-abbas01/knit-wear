@@ -29,6 +29,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useCartStore } from "@/store/cartStore";
+import SearchProducts from "./SearchProducts";
+import SearchComponent from "./SearchProducts";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -78,17 +80,30 @@ export default function Navbar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <nav className="flex flex-col gap-4 mt-8">
-              {routes.map((route) => (
-                <Link
-                  key={route.path}
-                  href={route.path}
-                  className="text-lg font-medium transition-colors hover:text-primary"
-                >
-                  {route.name}
-                </Link>
-              ))}
-            </nav>
+            <div className="flex flex-col gap-6">
+              <Link href="/" className="font-bold text-xl">
+                LUXE INTIMATES
+              </Link>
+
+              <div className="w-full">
+                <SearchComponent />
+              </div>
+
+              <nav className="flex flex-col gap-4">
+                {routes.map((route) => (
+                  <Link
+                    key={route.path}
+                    href={route.path}
+                    className={cn(
+                      "text-base font-medium transition-colors hover:text-primary",
+                      pathname === route.path && "text-primary"
+                    )}
+                  >
+                    {route.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
           </SheetContent>
         </Sheet>
 
@@ -113,32 +128,12 @@ export default function Navbar() {
           ))}
         </nav>
 
+        <div>
+          <SearchComponent />
+        </div>
+
         <div className="flex items-center gap-2 ml-auto">
           <ThemeToggle />
-          {isSearchOpen ? (
-            <div className="flex items-center border rounded-md overflow-hidden">
-              <Input
-                placeholder="Search..."
-                className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Search className="h-5 w-5" />
-              <span className="sr-only">Search</span>
-            </Button>
-          )}
 
           <Button variant="ghost" size="icon">
             <DropdownMenu>

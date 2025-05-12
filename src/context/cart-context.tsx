@@ -30,24 +30,6 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const updateMutation = useMutation({
-    mutationFn: updateCart,
-    onSuccess: () => {
-      toast("Added to cart");
-      // queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-    onError: (error: AxiosError) => {
-      const errorMessage = error.response?.data;
-      if (errorMessage === "Unauthorized") {
-        toast("Unauthorized", {
-          description: `Please login first to add product to carts`,
-        });
-      } else {
-        toast.error(`Failed To update qauntity: ${errorMessage}`);
-      }
-    },
-  });
-
   // Load cart from localStorage on initial render
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
@@ -103,7 +85,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const product = items.filter((item) => item.product.id === productId);
     console.log("filter product", product);
-    updateMutation.mutate(product);
   };
 
   const clearCart = () => {
