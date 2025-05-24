@@ -44,3 +44,33 @@ export const updateUser = async (data: updatedUser) => {
     throw error;
   }
 };
+
+export const changeUserPassword = async (email: string) => {
+  console.log("data", email);
+  try {
+    const response = await api.post(
+      `user/changePassword`,
+      { email },
+      {
+        withCredentials: true,
+      }
+    );
+    console.log("response update data", response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const resetUserPassword = async (data: any) => {
+  console.log("data", data);
+  try {
+    const response = await api.post(`user/resetPassword`, data, {
+      withCredentials: true,
+    });
+    console.log("response update data", response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

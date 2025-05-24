@@ -9,10 +9,10 @@ import TypingHeading from "@/components/TypingHeading";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col w-full ">
+    <main className="container mx-auto max-w-7xl flex min-h-screen flex-col w-full ">
       <AnimatedBanner />
 
-      <section className="container mx-auto max-w-7xl px-4 py-12 md:py-24 space-y-8">
+      <section className="px-4 py-12 md:py-24 space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
           <TypingHeading />
           <p className="text-muted-foreground md:text-xl max-w-[700px]">
@@ -32,7 +32,7 @@ export default function Home() {
 
       <CategoryShowcase />
 
-      <section className="container mx-auto max-w-7xl py-12 md:py-24">
+      <section className="py-12 md:py-24">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">
             New Arrivals
@@ -46,7 +46,7 @@ export default function Home() {
         <FeaturedProducts />
       </section>
 
-      <section className="container mx-auto max-w-7xl  py-12 md:py-24 w-full">
+      <section className="py-12 md:py-24 w-full">
         <div className=" space-y-8">
           <div className="text-center space-y-4">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">

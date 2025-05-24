@@ -20,6 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import AuthLayout from "@/components/auth/AuthLayout";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "@/lib/types";
+import { resetUserPassword } from "@/lib/api/user";
 
 const resetPasswordSchema = z
   .object({
@@ -38,10 +42,26 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  // const token = searchParams.get("token");
+  const queryClient = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const changePasswordMutation = useMutation({
+    mutationFn: resetUserPassword,
+    onSuccess: () => {
+      toast.success("Password reset sucessfully ");
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      router.push("/auth/signin");
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage = axiosError.response?.data?.message;
+      console.log("errorMessage", errorMessage);
+      toast.error(`Error while sending resetting password: ${errorMessage}`);
+    },
+  });
 
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -52,60 +72,40 @@ export default function ResetPasswordPage() {
   });
 
   async function onSubmit(data: ResetPasswordFormValues) {
-    if (!token) {
-      toast.error("Invalid reset link", {
-        description: "The password reset link is invalid or has expired.",
-      });
-      return;
-    }
+    // if (!token) {
+    //   toast.error("Invalid reset link", {
+    //     description: "The password reset link is invalid or has expired.",
+    //   });
+    //   return;
+    // }
 
-    setIsLoading(true);
-
-    try {
-      // This would be replaced with your actual password reset API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      toast.success("Password reset successful", {
-        description:
-          "Your password has been updated. You can now log in with your new password.",
-      });
-
-      // Redirect to login page after successful password reset
-      router.push("/auth/signin");
-    } catch (error) {
-      toast.error("Password reset failed", {
-        description:
-          "There was an error resetting your password. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    changePasswordMutation.mutate(data);
   }
 
-  if (!token) {
-    return (
-      <AuthLayout
-        title="Invalid Reset Link"
-        subtitle="The password reset link is invalid or has expired"
-      >
-        <div className="text-center space-y-4">
-          <div className="bg-destructive/10 text-destructive p-4 rounded-lg">
-            <p>
-              The password reset link you followed is invalid or has expired.
-            </p>
-          </div>
+  // if (!token) {
+  //   return (
+  //     <AuthLayout
+  //       title="Invalid Reset Link"
+  //       subtitle="The password reset link is invalid or has expired"
+  //     >
+  //       <div className="text-center space-y-4">
+  //         <div className="bg-destructive/10 text-destructive p-4 rounded-lg">
+  //           <p>
+  //             The password reset link you followed is invalid or has expired.
+  //           </p>
+  //         </div>
 
-          <p className="text-sm text-muted-foreground">
-            Please request a new password reset link.
-          </p>
+  //         <p className="text-sm text-muted-foreground">
+  //           Please request a new password reset link.
+  //         </p>
 
-          <Button className="w-full mt-4" asChild>
-            <Link href="/auth/forgot-password">Request New Link</Link>
-          </Button>
-        </div>
-      </AuthLayout>
-    );
-  }
+  //         <Button className="w-full mt-4" asChild>
+  //           <Link href="/auth/forgot-password">Request New Link</Link>
+  //         </Button>
+  //       </div>
+  //     </AuthLayout>
+  //   );
+  // }
 
   return (
     <AuthLayout
@@ -163,7 +163,7 @@ export default function ResetPasswordPage() {
           />
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+            {changePasswordMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Resetting password...

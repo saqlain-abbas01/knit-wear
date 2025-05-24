@@ -49,7 +49,7 @@ export default function LoginPage() {
   const mutation = useMutation({
     mutationFn: authUser,
     onSuccess: () => {
-      toast("logged In sucessfully");
+      toast.success("logged In sucessfully");
       queryClient.invalidateQueries({ queryKey: ["users"] });
       router.push("/");
     },
@@ -57,7 +57,7 @@ export default function LoginPage() {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       const errorMessage = axiosError.response?.data?.message;
       console.log("errorMessage", errorMessage);
-      toast(`error while logging in ${errorMessage}`);
+      toast.error(`error while logging in ${errorMessage}`);
     },
   });
 

@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import { updateUser } from "@/lib/api/user";
+import { changeUserPassword, updateUser } from "@/lib/api/user";
 import { ImageUpload } from "./uploadImage";
 
 interface ProfileInfoProps {
@@ -26,7 +26,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(user);
   const [image, setImage] = useState<string>(user?.image || "");
-  console.log("image url", image);
+
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -40,7 +40,25 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       const errorMessage = axiosError.response?.data?.message;
       console.log("errorMessage", errorMessage);
-      toast(`error while updating info ${errorMessage}`);
+      toast(`Error while updating info: ${errorMessage}`);
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: changeUserPassword,
+    onSuccess: () => {
+      toast.success(
+        "Password reset link sent sucessfully please check your inbox"
+      );
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage = axiosError.response?.data?.message;
+      console.log("errorMessage", errorMessage);
+      toast.error(
+        `Error while sending reset password link, please try again: ${errorMessage}`
+      );
     },
   });
 
@@ -69,6 +87,10 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
 
   const handleImagesChange = (newImages: string) => {
     setImage(newImages);
+  };
+
+  const handlePasswordChange = (email: string) => {
+    changePasswordMutation.mutate("asaqlain228@gmail.com");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -259,7 +281,12 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
       <div className="bg-muted/30 p-6 rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Password</h2>
-          <Button variant="outline">Change Password</Button>
+          <Button
+            variant="outline"
+            onClick={() => handlePasswordChange(user.email)}
+          >
+            Change Password
+          </Button>
         </div>
         <p className="text-muted-foreground">••••••••••••</p>
       </div>

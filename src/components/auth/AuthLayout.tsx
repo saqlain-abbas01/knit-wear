@@ -13,13 +13,14 @@ export default function AuthLayout({
   title,
   subtitle,
 }: AuthLayoutProps) {
+  const imageSrc = "/auth-image-01.jpg";
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side - Form */}
       <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 xl:px-10">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link href="/" className="flex justify-center mb-8">
-            <h1 className="text-2xl font-bold">LUXE INTIMATES</h1>
+            <h1 className="text-2xl font-bold">Knit Wear</h1>
           </Link>
 
           <h2 className="text-2xl font-bold text-center">{title}</h2>
@@ -39,7 +40,7 @@ export default function AuthLayout({
       <div className="hidden md:flex md:w-1/2 bg-muted relative">
         <div className="absolute inset-0">
           <Image
-            src="/placeholder.svg?height=1080&width=1080"
+            src={imageSrc}
             alt="Authentication"
             fill
             className="object-cover"
