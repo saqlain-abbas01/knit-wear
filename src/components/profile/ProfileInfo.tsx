@@ -86,11 +86,12 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   };
 
   const handleImagesChange = (newImages: string) => {
+    console.log("image url", newImages);
     setImage(newImages);
   };
-
+  console.log("uploaded image", image);
   const handlePasswordChange = (email: string) => {
-    changePasswordMutation.mutate("asaqlain228@gmail.com");
+    changePasswordMutation.mutate(email);
   };
 
   const handleSubmit = (e: React.FormEvent) => {

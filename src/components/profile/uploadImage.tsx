@@ -17,10 +17,6 @@ interface ImageUploadProps {
 export function ImageUpload({ image, onChange, onRemove }: ImageUploadProps) {
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("uploading image");
     const file = e.target.files?.[0];
@@ -63,7 +59,7 @@ export function ImageUpload({ image, onChange, onRemove }: ImageUploadProps) {
     }
   };
 
-  if (!isMounted) return null;
+  console.log("image", image);
 
   return (
     <div className="mb-4 space-y-4">
@@ -79,12 +75,7 @@ export function ImageUpload({ image, onChange, onRemove }: ImageUploadProps) {
               <Trash className="h-4 w-4" />
             </Button>
           </div>
-          <Image
-            fill
-            className="object-cover"
-            alt="Profile picture"
-            src={image}
-          />
+          <img className="object-cover" src={image} alt="profile" />
         </div>
       ) : (
         <label

@@ -18,6 +18,7 @@ interface ProductCartPrpos {
 }
 
 const ProductCart = ({ products }: ProductCartPrpos) => {
+  console.log("products", products);
   const route = useRouter();
   const queryClient = useQueryClient();
   const cartUnseen = useCartStore((state) => state.markCartUnseen);

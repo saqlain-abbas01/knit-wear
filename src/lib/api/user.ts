@@ -74,3 +74,16 @@ export const resetUserPassword = async (data: any) => {
     throw error;
   }
 };
+
+export const userLogout = async () => {
+  console.log("call logout");
+  try {
+    const response = await api.post(`user/logout`, null, {
+      withCredentials: true,
+    });
+    console.log("response update data", response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

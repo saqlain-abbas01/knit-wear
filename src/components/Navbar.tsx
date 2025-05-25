@@ -16,10 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useQuery } from "@tanstack/react-query";
-import { fecthUser } from "@/lib/api/user";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fecthUser, userLogout } from "@/lib/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { UserProfile } from "@/lib/types";
+import { ApiErrorResponse, UserProfile } from "@/lib/types";
 import { useUserStore } from "@/store/userStore";
 import {
   DropdownMenu,
@@ -31,6 +31,8 @@ import {
 import { useCartStore } from "@/store/cartStore";
 import SearchProducts from "./SearchProducts";
 import SearchComponent from "./SearchProducts";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -40,8 +42,9 @@ export default function Navbar() {
 
   const carts = useCartStore((state) => state.storeCarts);
   const cartSeen = useCartStore((state) => state.cartSeen);
-  console.log("carts", carts);
-  console.log("cart seen", cartSeen);
+  const queryClient = useQueryClient();
+  // console.log("carts", carts);
+  // console.log("cart seen", cartSeen);
 
   const routes = [
     { name: "Home", path: "/" },
@@ -58,6 +61,20 @@ export default function Navbar() {
     queryFn: fecthUser,
   });
 
+  const mutation = useMutation({
+    mutationFn: userLogout,
+    onSuccess: () => {
+      toast.success(`User logout sucessfully`);
+      queryClient.clear();
+      router.push("/");
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage = axiosError.response?.data?.message;
+      toast.error(`Error while loging out please try again..`);
+    },
+  });
+
   console.log("profile", profile);
 
   useEffect(() => {
@@ -68,6 +85,11 @@ export default function Navbar() {
       clearUser();
     }
   }, [data]);
+
+  const handleLogout = () => {
+    console.log("calling logout mutation");
+    mutation.mutate();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
@@ -141,10 +163,7 @@ export default function Navbar() {
                 <div>
                   {profile?.image ? (
                     <Avatar>
-                      <AvatarImage
-                        src={profile.image || "/placeholder.svg"}
-                        alt="User Avatar"
-                      />
+                      <AvatarImage src={profile.image} alt="User Avatar" />
                       <AvatarFallback>
                         <User className="text-gray-500" />
                       </AvatarFallback>
@@ -166,7 +185,9 @@ export default function Navbar() {
                       Profile
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>
+                      Logout
+                    </DropdownMenuItem>
                   </>
                 ) : (
                   <DropdownMenuItem onClick={() => router.push("/auth/signin")}>

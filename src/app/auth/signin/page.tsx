@@ -50,7 +50,7 @@ export default function LoginPage() {
     mutationFn: authUser,
     onSuccess: () => {
       toast.success("logged In sucessfully");
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       router.push("/");
     },
     onError: (error) => {
