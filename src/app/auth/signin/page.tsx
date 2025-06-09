@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import AuthLayout from "@/components/auth/AuthLayout";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { authUser, createUser } from "@/lib/api/user";
+import { authUser, createUser, googleAuth } from "@/lib/api/user";
 import { error } from "console";
 import { ApiErrorResponse } from "@/lib/types";
 
@@ -61,9 +61,19 @@ export default function LoginPage() {
     },
   });
 
+  const googleAuthMutation = useMutation({
+    mutationFn: async () => {
+      window.location.href = "http://localhost:4000/auth/google";
+    },
+  });
+
   async function onSubmit(data: LoginFormValues) {
     mutation.mutate(data);
   }
+
+  const handleGoogleAuth = () => {
+    googleAuthMutation.mutate();
+  };
 
   return (
     <AuthLayout
@@ -144,7 +154,18 @@ export default function LoginPage() {
           </Button>
         </form>
       </Form>
-
+      <Button
+        onClick={handleGoogleAuth}
+        className="w-full mt-2 flex gap-1"
+        variant={"outline"}
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="Google Logo"
+          className="w-5 h-5"
+        />
+        {googleAuthMutation.isPending ? "Signing..." : " Sign in with google"}
+      </Button>
       <div className="mt-6 text-center text-sm">
         <p className="text-muted-foreground">
           Don't have an account?{" "}

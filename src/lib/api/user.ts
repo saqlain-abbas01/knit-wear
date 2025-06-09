@@ -87,3 +87,14 @@ export const userLogout = async () => {
     throw error;
   }
 };
+
+export const googleAuth = async () => {
+  console.log("call google auth");
+  try {
+    const response = await api.get("auth/google");
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

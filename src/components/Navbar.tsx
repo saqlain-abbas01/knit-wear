@@ -70,7 +70,8 @@ export default function Navbar() {
     onSuccess: () => {
       toast.success(`User logout sucessfully`);
       queryClient.clear();
-      router.push("/");
+      router.push("/auth/signin");
+      setProfile(undefined);
       router.refresh();
     },
     onError: (error) => {
@@ -90,7 +91,6 @@ export default function Navbar() {
   }, [data]);
 
   const handleLogout = () => {
-    console.log("calling logout mutation");
     mutation.mutate();
   };
 

@@ -76,10 +76,19 @@ export default function SignupPage() {
     },
   });
 
+  const googleAuthMutation = useMutation({
+    mutationFn: async () => {
+      window.location.href = "http://localhost:4000/auth/google";
+    },
+  });
+
   async function onSubmit(data: SignupFormValues) {
     mutation.mutate(data);
   }
-
+  const handleGoogleAuth = () => {
+    console.log("gooogle auth...");
+    googleAuthMutation.mutate();
+  };
   return (
     <AuthLayout
       title="Create an Account"
@@ -219,7 +228,20 @@ export default function SignupPage() {
           </Button>
         </form>
       </Form>
-
+      <Button
+        onClick={handleGoogleAuth}
+        className="w-full mt-2 flex gap-1"
+        variant={"outline"}
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="Google Logo"
+          className="w-5 h-5"
+        />
+        {googleAuthMutation.isPending
+          ? "Signing up..."
+          : " Sign up with google"}
+      </Button>
       <div className="mt-6 text-center text-sm">
         <p className="text-muted-foreground">
           Already have an account?{" "}
