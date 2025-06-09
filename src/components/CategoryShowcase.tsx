@@ -20,30 +20,31 @@ export default function CategoryShowcase() {
 
     const cards = cardsRef.current;
 
-    // Set initial state
-    gsap.set(cards, {
-      y: 150,
-      opacity: 0,
-      scale: 0.6,
+    // Set initial state for each card
+    cards.forEach((card, index) => {
+      gsap.set(card, {
+        x: index === 0 ? -150 : 150, // left card from left, right card from right
+        opacity: 0,
+        scale: 0.6,
+      });
     });
 
-    // Create scroll trigger animation
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 85%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.to(cards, {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      duration: 1.2,
-      stagger: 0.3,
-      ease: "back.out(1.7)",
+    // Create scroll trigger animation for each card
+    cards.forEach((card, index) => {
+      gsap.to(card, {
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 85%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+        delay: index * 0.3,
+      });
     });
 
     return () => {
@@ -58,10 +59,7 @@ export default function CategoryShowcase() {
   };
 
   return (
-    <section
-      ref={containerRef}
-      className="container mx-auto max-w-6xl px-4 py-10"
-    >
+    <section ref={containerRef} className="px-4 py-10">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -70,6 +68,7 @@ export default function CategoryShowcase() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {/* Women's Collection */}
         <div
           ref={addToRefs}
           className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500"
@@ -102,6 +101,7 @@ export default function CategoryShowcase() {
           </div>
         </div>
 
+        {/* Men's Collection */}
         <div
           ref={addToRefs}
           className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500"

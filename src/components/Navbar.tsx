@@ -71,6 +71,7 @@ export default function Navbar() {
       toast.success(`User logout sucessfully`);
       queryClient.clear();
       router.push("/");
+      router.refresh();
     },
     onError: (error) => {
       const axiosError = error as AxiosError<ApiErrorResponse>;
@@ -78,8 +79,6 @@ export default function Navbar() {
       toast.error(`Error while loging out please try again..`);
     },
   });
-
-  console.log("profile", profile);
 
   useEffect(() => {
     if (data?.user) {
@@ -152,14 +151,14 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <div>
                     {profile?.image ? (
-                      <Avatar>
+                      <Avatar className="w-6 h-6">
                         <AvatarImage src={profile.image} alt="User Avatar" />
                         <AvatarFallback>
                           <User className="text-gray-500" />
                         </AvatarFallback>
                       </Avatar>
                     ) : (
-                      <Avatar>
+                      <Avatar className="w-6 h-6">
                         <AvatarFallback>
                           <User className="text-gray-500" />
                         </AvatarFallback>
@@ -193,7 +192,7 @@ export default function Navbar() {
             <Button variant="ghost" size="icon" asChild>
               <Link href="/carts">
                 <div className="relative " onClick={() => markCartSeen()}>
-                  <ShoppingCartIcon className="w-6 h-6" />
+                  <ShoppingCartIcon className="w-8 h-8" />
                   {!cartSeen && carts.length > 0 && (
                     <span className="absolute -top-3 left-4 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                       {carts.length}
