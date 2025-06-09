@@ -58,7 +58,7 @@ export default function SearchComponent() {
   }, []);
 
   return (
-    <div className="relative w-full max-w-xs" ref={searchRef}>
+    <div className="relative w-full max-w-md" ref={searchRef}>
       <div className="relative">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input

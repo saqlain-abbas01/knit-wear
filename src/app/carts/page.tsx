@@ -73,6 +73,8 @@ export default function CartPage() {
     }
   }, [data]);
 
+  console.log("carts", carts);
+
   const updateMutation = useMutation({
     mutationFn: updateCart,
     onSuccess: () => {
@@ -192,7 +194,7 @@ export default function CartPage() {
             <div className="col-span-2 text-center">Total</div>
           </div>
 
-          {carts.map((item, index) => (
+          {carts?.map((item, index) => (
             <Card key={index} className="overflow-hidden border-muted/40">
               <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 items-center ">

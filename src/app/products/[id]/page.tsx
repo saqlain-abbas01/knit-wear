@@ -43,8 +43,6 @@ export default function ProductPage() {
 
   const cartUnseen = useCartStore((state) => state.markCartUnseen);
 
-  console.log("category", category);
-
   if (!id || typeof id !== "string") {
     route.push("/");
     return null; // important: avoid rendering the rest of the component
@@ -71,14 +69,12 @@ export default function ProductPage() {
     }
   }, [wishlist]);
 
-  console.log("wishlist", wishList);
-
   const product = data?.product as Product;
 
   const createMutation = useMutation({
     mutationFn: createCart,
     onSuccess: () => {
-      toast("Added to cart", {
+      toast.success("Added to cart", {
         description: `${product.title} has been added to your cart`,
         action: {
           label: "View Cart",
@@ -91,7 +87,7 @@ export default function ProductPage() {
     onError: (error: AxiosError) => {
       const errorMessage = error.response?.data;
       if (errorMessage === "Unauthorized") {
-        toast("Unauthorized", {
+        toast.error("Unauthorized", {
           description: `Please login first to add product to carts`,
           action: {
             label: "Login In",
@@ -159,32 +155,42 @@ export default function ProductPage() {
   return (
     <main className="container mx-auto max-w-7xl py-8 md:py-12 ">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 ">
-        <div className="space-y-4" onClick={() => setOpen(true)}>
-          <div className="h-full relative overflow-hidden rounded-lg">
-            <Image
-              src={product?.images[0] || "/placeholder.svg"}
-              alt={product?.name}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-          {product?.images?.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {product?.images.map((image, i) => (
-                <div
-                  key={i}
-                  className="aspect-square relative overflow-hidden rounded-lg border cursor-pointer hover:opacity-80"
-                >
-                  <Image
-                    src={(i as unknown as string) || "/placeholder.svg"}
-                    alt={`${image} thumbnail ${i + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
+        <div className="space-y-4 " onClick={() => setOpen(true)}>
+          {product?.images?.length > 1 ? (
+            <div className=" grid grid-cols-4 grid-rows-[80%_20%] gap-2 h-[500px] max-h-[500px] rounded-lg overflow-hidden">
+              {product?.images.slice(0, 5).map((image, i) => {
+                const isFirst = i === 0;
+                return (
+                  <div
+                    key={i}
+                    className={`relative overflow-hidden rounded-lg border cursor-pointer hover:opacity-80 ${
+                      isFirst
+                        ? "col-span-4 row-span-1"
+                        : "row-start-2 col-span-1 aspect-square border border-black"
+                    }`}
+                  >
+                    <Image
+                      src={(image as string) || "/placeholder.svg"}
+                      alt={`Thumbnail ${i + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                );
+              })}
             </div>
+          ) : (
+            <>
+              <div className="h-full relative overflow-hidden rounded-lg">
+                <Image
+                  src={product?.images[0] || "/placeholder.svg"}
+                  alt={product?.name}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </>
           )}
         </div>
         <ImageCarouselComponent

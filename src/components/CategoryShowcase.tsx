@@ -72,11 +72,11 @@ export default function CategoryShowcase() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         <div
           ref={addToRefs}
-          className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 p-[2px] hover:shadow-2xl transition-all duration-500"
+          className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500"
         >
           <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
             <Image
-              src="/placeholder.svg?height=400&width=300"
+              src="/men-button (2).jpg"
               alt="Women's Collection"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -104,11 +104,11 @@ export default function CategoryShowcase() {
 
         <div
           ref={addToRefs}
-          className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 p-[2px] hover:shadow-2xl transition-all duration-500"
+          className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500"
         >
           <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
             <Image
-              src="/placeholder.svg?height=400&width=300"
+              src="/women-button (1).jpg"
               alt="Men's Collection"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"

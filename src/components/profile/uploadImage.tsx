@@ -50,7 +50,8 @@ export function ImageUpload({ image, onChange, onRemove }: ImageUploadProps) {
       if (!response.ok) {
         throw new Error("Upload failed");
       }
-      const { urls } = await response.json();
+      const result = await response.json();
+      const urls = result.data;
       console.log("url", urls);
       onChange(urls[0]);
     } catch (error) {

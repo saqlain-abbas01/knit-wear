@@ -80,7 +80,7 @@ const ImageCarouselComponent = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-background backdrop-blur-sm border-none">
+      <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md p-0 overflow-hidden bg-background backdrop-blur-sm border-none">
         <div
           className={cn(
             "relative w-full transition-all duration-300",
@@ -150,35 +150,17 @@ const ImageCarouselComponent = ({
                   className={cn(
                     "absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white border-none hover:bg-black/80",
                     "transition-opacity duration-200",
-                    isFirstSlide
-                      ? "opacity-40 cursor-not-allowed"
-                      : "opacity-100",
                     isZoomed && "hidden"
                   )}
-                  disabled={isFirstSlide}
-                  onClick={(e) => {
-                    if (isFirstSlide) e.preventDefault();
-                  }}
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </CarouselPrevious>
+                />
 
                 <CarouselNext
                   className={cn(
                     "absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white border-none hover:bg-black/80",
                     "transition-opacity duration-200",
-                    isLastSlide
-                      ? "opacity-40 cursor-not-allowed"
-                      : "opacity-100",
                     isZoomed && "hidden"
                   )}
-                  disabled={isLastSlide}
-                  onClick={(e) => {
-                    if (isLastSlide) e.preventDefault();
-                  }}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </CarouselNext>
+                />
               </>
             )}
           </Carousel>

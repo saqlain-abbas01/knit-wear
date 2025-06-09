@@ -22,6 +22,7 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
   const route = useRouter();
   const queryClient = useQueryClient();
   const cartUnseen = useCartStore((state) => state.markCartUnseen);
+  const setStoreCarts = useCartStore((state) => state.setStoreCarts);
 
   const [wishList, setWishList] = useState<Product[]>();
   const [quantity, setQuantity] = useState(1);
@@ -39,14 +40,15 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
 
   const createCartMutation = useMutation({
     mutationFn: createCart,
-    onSuccess: () => {
-      toast("Added to cart", {
+    onSuccess: (data) => {
+      toast.success(`Added to cart successfully:`, {
         action: {
           label: "View Cart",
           onClick: () => route.push("/carts"),
         },
       });
       cartUnseen();
+      setStoreCarts(data.cart);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error: AxiosError) => {

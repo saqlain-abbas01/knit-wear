@@ -20,7 +20,18 @@ export const useCartStore = create<CartState>((set) => ({
   totalItems: 0,
   subtotal: 0,
   cartSeen: true,
-  setStoreCarts: (items) => set({ storeCarts: items }),
+  setStoreCarts: (items) =>
+    set((state) => {
+      const newItems = Array.isArray(items) ? items : [items];
+
+      const filteredItems = newItems.filter(
+        (newItem) => !state.storeCarts.some((item) => item.id === newItem.id)
+      );
+
+      return {
+        storeCarts: [...state.storeCarts, ...filteredItems],
+      };
+    }),
   setTotalItems: (count) => set({ totalItems: count }),
   setSubtotal: (amount) => set({ subtotal: amount }),
 

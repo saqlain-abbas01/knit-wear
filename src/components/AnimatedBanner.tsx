@@ -17,7 +17,7 @@ export default function AnimatedBanner() {
       alt: "Limited time offer: 20% off sitewide",
     },
     {
-      image: "/banner3.jpg",
+      image: "/banner.jpg",
       alt: "Free shipping on orders over $50",
     },
   ];
@@ -31,7 +31,7 @@ export default function AnimatedBanner() {
   }, [banners.length]);
 
   return (
-    <div className="relative h-[300px] md:h-[450px] w-screen left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
+    <div className="relative h-[300px] md:h-[480px] w-screen left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentBanner}
