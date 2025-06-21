@@ -66,13 +66,14 @@ export default function SignupPage() {
   const mutation = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
+      toast.success("User created Sucessfully")
       router.push("/auth/signin");
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       const errorMessage = axiosError.response?.data?.message;
-      toast(`error while signup in ${errorMessage}`);
+      toast.error(`error while signup in ${errorMessage}`);
     },
   });
 
@@ -217,7 +218,7 @@ export default function SignupPage() {
           />
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+            {mutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating account...

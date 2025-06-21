@@ -56,8 +56,7 @@ export default function LoginPage() {
     onError: (error) => {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       const errorMessage = axiosError.response?.data?.message;
-      console.log("errorMessage", errorMessage);
-      toast.error(`error while logging in ${errorMessage}`);
+      toast.error(`Error while logging in: ${errorMessage}`);
     },
   });
 

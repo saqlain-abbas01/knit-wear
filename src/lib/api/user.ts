@@ -14,9 +14,10 @@ export const authUser = async (data: any) => {
     const response = await api.post("/auth/signIn", data, {
       withCredentials: true,
     });
-    console.log("auth User", response.data);
+    console.log("auth User api response:", response.data);
     return response.data;
   } catch (error) {
+    console.log("error", error)
     throw error;
   }
 };
