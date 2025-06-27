@@ -30,7 +30,7 @@ const ImageCarouselComponent = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const hasMultipleImages = product.images && product.images.length > 1;
+  const hasMultipleImages = product?.images && product?.images?.length > 1;
 
   // Create API for the carousel
   const [api, setApi] = useState<any>(null);
@@ -80,7 +80,7 @@ const ImageCarouselComponent = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md p-0 overflow-hidden bg-background backdrop-blur-sm border-none">
+      <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-0 overflow-hidden bg-background backdrop-blur-sm border-none">
         <div
           className={cn(
             "relative w-full transition-all duration-300",

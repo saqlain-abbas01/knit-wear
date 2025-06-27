@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductGrid from "@/components/ProductGrid";
 import ProductFilters from "@/components/ProductFilters";
-import { products } from "@/lib/products";
 import { fetchFilterProducts } from "@/lib/api/products";
 import { useQuery } from "@tanstack/react-query";
 

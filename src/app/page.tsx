@@ -37,11 +37,7 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">
             New Arrivals
           </h2>
-          <Button variant="ghost" asChild>
-            <Link href="/products" className="flex items-center gap-2">
-              View All <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+      
         </div>
         <FeaturedProducts />
       </section>
