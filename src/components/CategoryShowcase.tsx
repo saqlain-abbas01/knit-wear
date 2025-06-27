@@ -108,7 +108,7 @@ export default function CategoryShowcase() {
         >
           <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
             <Image
-              src=" /men-button (2).jpg"
+              src="/men-button (2).jpg"
               alt="Men's Collection"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
