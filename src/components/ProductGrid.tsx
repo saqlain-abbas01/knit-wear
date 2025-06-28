@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import type { Product } from "@/lib/types";
 import { AlertCircle, ShoppingBag } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import ProductCart from "./ProductCart";
+import ProductPageCart from "./ProductPageCart";
 
 interface ProductGridProps {
   products: Product[];
@@ -79,7 +78,7 @@ export default function ProductGrid({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <ProductCart products={products} />
+      <ProductPageCart products={products} />
     </div>
   );
 }

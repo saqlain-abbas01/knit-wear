@@ -88,7 +88,10 @@ export default function ProductFilters({
               {brands ? (
                 <div className="space-y-2">
                   {brands.map((brand: Brand) => (
-                    <div key={brand.id} className="flex items-center space-x-2">
+                    <div
+                      key={brand.id}
+                      className="flex items-center space-x-2 py-1"
+                    >
                       <Checkbox
                         id={`brand-${brand}`}
                         checked={filters.brands.includes(brand.value)}

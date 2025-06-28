@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   User,
@@ -13,9 +13,16 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { userLogout } from "@/lib/api/user";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "@/lib/types";
 
 export default function ProfileSidebar() {
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const navItems = [
     {
@@ -50,6 +57,25 @@ export default function ProfileSidebar() {
     },
   ];
 
+  const mutation = useMutation({
+    mutationFn: userLogout,
+    onSuccess: () => {
+      toast.success(`User logout sucessfully`);
+      queryClient.clear();
+      window.location.href = "/auth/signin";
+      router.refresh();
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage = axiosError.response?.data?.message;
+      toast.error(`Error while loging out please try again..`);
+    },
+  });
+
+  const handleLogOut = () => {
+    mutation.mutate();
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -74,7 +100,8 @@ export default function ProfileSidebar() {
       <div className="pt-4 border-t">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-2 text-red-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
+          className="w-full cursor-pointer justify-start gap-2 text-red-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
+          onClick={handleLogOut}
         >
           <LogOut className="h-4 w-4" />
           Sign Out

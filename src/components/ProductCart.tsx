@@ -23,6 +23,8 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
   const queryClient = useQueryClient();
   const cartUnseen = useCartStore((state) => state.markCartUnseen);
   const setStoreCarts = useCartStore((state) => state.setStoreCarts);
+  const setTotalItems = useCartStore((state) => state.setTotalItems);
+  const totalItmes = useCartStore((state) => state.totalItems);
 
   const [wishList, setWishList] = useState<Product[]>();
   const [quantity, setQuantity] = useState(1);
@@ -49,12 +51,13 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
       });
       cartUnseen();
       setStoreCarts(data.cart);
+      setTotalItems(totalItmes + 1);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error: AxiosError) => {
       const errorMessage = error.response?.data;
       if (errorMessage === "Unauthorized") {
-        toast("Unauthorized", {
+        toast.error("Unauthorized", {
           description: `Please login first to add product to carts`,
           action: {
             label: "Login In",

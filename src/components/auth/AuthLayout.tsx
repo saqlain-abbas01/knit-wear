@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export default function AuthLayout({
       <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 xl:px-10">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link href="/" className="flex justify-center mb-8">
-            <h1 className="text-2xl font-bold">Knit Wear</h1>
+            <h1 className="text-2xl font-bold">LUXE INTIMATES</h1>
           </Link>
 
           <h2 className="text-2xl font-bold text-center">{title}</h2>

@@ -10,7 +10,7 @@ import WishList from "@/components/WishList";
 export default function ProfilePage() {
   // const data = { name: "string", email: "string@gmail.com" };
   const user = useUserStore((state) => state.user);
-  console.log("user profile", user);
+
   return (
     <main className="container mx-auto max-w-7xl py-8 md:py-12">
       <h1 className="text-3xl font-bold mb-8">My Account</h1>

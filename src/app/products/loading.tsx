@@ -1,37 +1,37 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { ShoppingBag, Shirt, Heart, Sparkles } from "lucide-react"
+import { useEffect, useState } from "react";
+import { ShoppingBag, Shirt, Heart, Sparkles } from "lucide-react";
 
 export default function GlobalLoading() {
-  const [loadingText, setLoadingText] = useState("Loading")
-  const [progress, setProgress] = useState(0)
+  const [loadingText, setLoadingText] = useState("Loading");
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     // Animate loading text
     const textInterval = setInterval(() => {
       setLoadingText((prev) => {
-        if (prev === "Loading...") return "Loading"
-        return prev + "."
-      })
-    }, 500)
+        if (prev === "Loading...") return "Loading";
+        return prev + ".";
+      });
+    }, 500);
 
     // Simulate progress
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) return 0
-        return prev + 2
-      })
-    }, 100)
+        if (prev >= 100) return 0;
+        return prev + 2;
+      });
+    }, 100);
 
     return () => {
-      clearInterval(textInterval)
-      clearInterval(progressInterval)
-    }
-  }, [])
+      clearInterval(textInterval);
+      clearInterval(progressInterval);
+    };
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="py-20 fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-20 w-32 h-32 bg-primary rounded-full animate-pulse"></div>
@@ -65,7 +65,8 @@ export default function GlobalLoading() {
                     style={{
                       animationDelay: "0.5s",
                       animationDuration: "2s",
-                      animation: "bounce 2s infinite 0.5s, fadeInOut 4s infinite",
+                      animation:
+                        "bounce 2s infinite 0.5s, fadeInOut 4s infinite",
                     }}
                   />
                   <Heart
@@ -73,7 +74,8 @@ export default function GlobalLoading() {
                     style={{
                       animationDelay: "1s",
                       animationDuration: "2s",
-                      animation: "bounce 2s infinite 1s, fadeInOut 4s infinite 1s",
+                      animation:
+                        "bounce 2s infinite 1s, fadeInOut 4s infinite 1s",
                     }}
                   />
                 </div>
@@ -102,12 +104,16 @@ export default function GlobalLoading() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
               ComfortWear
             </h1>
-            <p className="text-sm text-slate-500 font-medium tracking-wide">Premium Intimate Apparel</p>
+            <p className="text-sm text-slate-500 font-medium tracking-wide">
+              Premium Intimate Apparel
+            </p>
           </div>
 
           {/* Loading Text */}
           <div className="space-y-3">
-            <p className="text-lg font-medium text-slate-700 min-h-[1.75rem]">{loadingText}</p>
+            <p className="text-lg font-medium text-slate-700 min-h-[1.75rem]">
+              {loadingText}
+            </p>
 
             {/* Progress Bar */}
             <div className="w-64 mx-auto">
@@ -128,7 +134,9 @@ export default function GlobalLoading() {
             <div className="w-12 h-12 mx-auto bg-gradient-to-br from-blue-100 to-blue-50 rounded-full flex items-center justify-center">
               <Shirt className="w-6 h-6 text-blue-600" />
             </div>
-            <p className="text-xs text-slate-600 font-medium">Premium Quality</p>
+            <p className="text-xs text-slate-600 font-medium">
+              Premium Quality
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -156,10 +164,15 @@ export default function GlobalLoading() {
 
       <style jsx>{`
         @keyframes fadeInOut {
-          0%, 100% { opacity: 0; }
-          50% { opacity: 1; }
+          0%,
+          100% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
         }
       `}</style>
     </div>
-  )
+  );
 }

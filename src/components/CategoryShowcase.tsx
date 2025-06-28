@@ -3,63 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
 export default function CategoryShowcase() {
-  const containerRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const cards = cardsRef.current;
-
-    // Set initial state for each card
-    cards.forEach((card, index) => {
-      gsap.set(card, {
-        x: index === 0 ? -150 : 150, // left card from left, right card from right
-        opacity: 0,
-        scale: 0.6,
-      });
-    });
-
-    // Create scroll trigger animation for each card
-    cards.forEach((card, index) => {
-      gsap.to(card, {
-        x: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 1.2,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 85%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
-        delay: index * 0.3,
-      });
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
-
-  const addToRefs = (el: HTMLDivElement | null) => {
-    if (el && !cardsRef.current.includes(el)) {
-      cardsRef.current.push(el);
-    }
-  };
-
   return (
-    <section ref={containerRef} className="px-4 py-10">
+    <section className="px-4 py-10">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -69,10 +18,7 @@ export default function CategoryShowcase() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {/* Women's Collection */}
-        <div
-          ref={addToRefs}
-          className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500"
-        >
+        <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500">
           <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
             <Image
               src="/women-button (1).jpg"
@@ -102,10 +48,7 @@ export default function CategoryShowcase() {
         </div>
 
         {/* Men's Collection */}
-        <div
-          ref={addToRefs}
-          className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500"
-        >
+        <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-r border border-primary p-[2px] hover:shadow-2xl transition-all duration-500">
           <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
             <Image
               src="/men-button (2).jpg"

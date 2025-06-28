@@ -6,7 +6,7 @@ export const fetchRecentProducts = async () => {
   return response.data;
 };
 
-export const fetchProductById = async (id: string) => {
+export const fetchProductById = async (id: any) => {
   console.log("fetch  products by id", id);
   const response = await api.get(`/products/${id}`);
   console.log("response product", response.data);

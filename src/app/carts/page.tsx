@@ -36,10 +36,15 @@ import { useCartStore } from "@/store/cartStore";
 export default function CartPage() {
   const queryClient = useQueryClient();
   const [carts, setCarts] = useState<CartItem[]>([]);
-  const { setStoreCarts, setSubtotal, setTotalItems, markCartSeen } =
-    useCartStore();
+  const {
+    setStoreCarts,
+    setSubtotal,
+    totalItems,
+    setTotalItems,
+    markCartSeen,
+  } = useCartStore();
   let subtotal = 0;
-  let totalItems = 0;
+  let totalItemsInCart = 0;
 
   const sizeMap = {
     xs: {
@@ -90,6 +95,7 @@ export default function CartPage() {
     mutationFn: deleteCart,
     onSuccess: () => {
       toast.success("Item removed from cart");
+      setTotalItems(totalItems - 1);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error) => {
@@ -102,7 +108,7 @@ export default function CartPage() {
       (acc, item) => acc + item.product.price * item.quantity,
       0
     );
-    totalItems = carts.reduce((acc, item) => acc + item.quantity, 0);
+    totalItemsInCart = carts.reduce((acc, item) => acc + item.quantity, 0);
     setStoreCarts(carts);
     setSubtotal(subtotal);
     setTotalItems(totalItems);
@@ -173,10 +179,10 @@ export default function CartPage() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10">
         <div>
           <h1 className="text-3xl font-bold">Shopping Cart</h1>
-          <p className="text-muted-foreground mt-1">
+          {/* <p className="text-muted-foreground mt-1">
             You have {totalItems} {totalItems === 1 ? "item" : "items"} in your
             cart
-          </p>
+          </p> */}
         </div>
         <Button variant="outline" asChild className="gap-2 mt-4 md:mt-0">
           <Link href="/products">

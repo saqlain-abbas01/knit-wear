@@ -116,18 +116,22 @@ export default function Navbar() {
                 </div>
 
                 <nav className="flex flex-col gap-4">
-                  {routes.map((route) => (
-                    <Link
-                      key={route.path}
-                      href={route.path}
-                      className={cn(
-                        "text-base font-medium transition-colors hover:text-primary",
-                        pathname === route.path && "text-primary"
-                      )}
-                    >
-                      {route.name}
-                    </Link>
-                  ))}
+                  {routes.map((route) => {
+                    const isActive = currentPath === route.path;
+
+                    return (
+                      <Link
+                        key={route.path}
+                        href={route.path}
+                        className={cn(
+                          "ml-4 text-sm font-medium transition-colors hover:text-primary",
+                          isActive && "text-primary  border-primary pb-[2px]"
+                        )}
+                      >
+                        {route.name}
+                      </Link>
+                    );
+                  })}
                 </nav>
               </div>
             </SheetContent>
@@ -220,7 +224,7 @@ export default function Navbar() {
                 href={route.path}
                 className={cn(
                   "ml-4 text-sm font-medium transition-colors hover:text-primary",
-                  isActive && "text-primary border-b-2 border-primary pb-[2px]"
+                  isActive && "text-primary  border-primary pb-[2px]"
                 )}
               >
                 {route.name}

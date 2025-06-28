@@ -3,6 +3,7 @@ import { Product } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import ProductCart from "./ProductCart";
+import ProductPageCart from "./ProductPageCart";
 
 const WishList = () => {
   const {
@@ -28,8 +29,9 @@ const WishList = () => {
       </>
     );
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-      <ProductCart products={WishList} />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <ProductPageCart products={WishList} />
+      {/* <ProductCart products={WishList} /> */}
     </div>
   );
 };

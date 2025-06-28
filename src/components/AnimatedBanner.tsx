@@ -1,17 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function AnimatedBanner() {
-  const [currentBanner, setCurrentBanner] = useState(0)
+  const router = useRouter();
+  const [currentBanner, setCurrentBanner] = useState(0);
 
   const banners = [
     {
       image: "/new-banner-1.jpg",
       alt: "New collection just dropped",
-      objectFit: "cover" as const, 
+      objectFit: "cover" as const,
     },
     {
       image: "/banner2.jpg",
@@ -23,18 +25,22 @@ export default function AnimatedBanner() {
       alt: "Free shipping on orders over $50",
       objectFit: "cover" as const,
     },
-  ]
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % banners.length)
-    }, 5000)
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 100000);
 
-    return () => clearInterval(interval)
-  }, [banners.length])
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  const handleButtonClick = () => {
+    router.push("/products");
+  };
 
   return (
-    <div className="relative h-[300px] md:h-[480px] w-screen left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
+    <div className="relative h-[300px] md:h-[480px] w-screen lg:h-[530px] left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentBanner}
@@ -46,10 +52,17 @@ export default function AnimatedBanner() {
         >
           <div className="relative w-full h-full">
             <Image
-              src={banners[currentBanner].image || "/placeholder.svg?height=480&width=1920"}
+              src={
+                banners[currentBanner].image ||
+                "/placeholder.svg?height=480&width=1920"
+              }
               alt={banners[currentBanner].alt}
               fill
-              className={`${banners[currentBanner].objectFit === "cover" ? "object-cover" : "w-full h-full"}`}
+              className={`${
+                banners[currentBanner].objectFit === "cover"
+                  ? "object-cover"
+                  : "w-full h-full"
+              }`}
               priority
               sizes="100vw"
             />
@@ -64,10 +77,11 @@ export default function AnimatedBanner() {
                   {banners[currentBanner].alt}
                 </motion.h2>
                 <motion.button
-                  className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
+                  className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.6 }}
+                  onClick={handleButtonClick}
                 >
                   Shop Now
                 </motion.button>
@@ -84,7 +98,9 @@ export default function AnimatedBanner() {
             key={index}
             onClick={() => setCurrentBanner(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentBanner ? "bg-white scale-125" : "bg-white/50 hover:bg-white/75"
+              index === currentBanner
+                ? "bg-white scale-125"
+                : "bg-white/50 hover:bg-white/75"
             }`}
             aria-label={`Go to banner ${index + 1}`}
           />
@@ -93,12 +109,26 @@ export default function AnimatedBanner() {
 
       {/* Navigation arrows */}
       <button
-        onClick={() => setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length)}
+        onClick={() =>
+          setCurrentBanner(
+            (prev) => (prev - 1 + banners.length) % banners.length
+          )
+        }
         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors backdrop-blur-sm"
         aria-label="Previous banner"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
 
@@ -107,10 +137,20 @@ export default function AnimatedBanner() {
         className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors backdrop-blur-sm"
         aria-label="Next banner"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </button>
     </div>
-  )
+  );
 }
