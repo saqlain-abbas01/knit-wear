@@ -44,7 +44,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile>();
 
   const carts = useCartStore((state) => state.storeCarts);
