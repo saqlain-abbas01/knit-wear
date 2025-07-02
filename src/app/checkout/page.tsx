@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/context/cart-context";
 import { CheckoutProvider } from "@/context/checkout-context";
 import CheckoutStepper from "@/components/checkout/CheckoutStepper";
 import ShippingForm from "@/components/checkout/ShippingForm";
@@ -10,11 +9,11 @@ import PaymentForm from "@/components/checkout/PaymentForm";
 import OrderReview from "@/components/checkout/OrderReview";
 import OrderComplete from "@/components/checkout/OrderComplete";
 import { toast } from "sonner";
-import { fecthCarts } from "@/lib/api/cart";
+import { deleteCart, fecthCarts } from "@/lib/api/cart";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCartStore } from "@/store/cartStore";
 import { ShippingFormValues } from "@/lib/types";
-import { createOrder } from "@/lib/api/order";
+import { createOrder, removeCarts } from "@/lib/api/order";
 import { useUserStore } from "@/store/userStore";
 import { useStore } from "zustand";
 
@@ -31,6 +30,12 @@ export default function CheckoutPage() {
   const user = useUserStore((state) => state.user);
   const clearCart = useCartStore((state) => state.clearCart);
 
+  console.log("carts", carts);
+
+  const userId = user?.id;
+
+  if (!userId) return;
+
   const createMutation = useMutation({
     mutationFn: createOrder,
     onSuccess: () => {
@@ -39,6 +44,10 @@ export default function CheckoutPage() {
     onError: (error) => {
       toast.error("Failed to update quantity. Please try again.");
     },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteCart,
   });
 
   if (carts.length === 0 && typeof window !== "undefined") {
@@ -85,7 +94,10 @@ export default function CheckoutPage() {
     };
     createMutation.mutate(data);
     setCurrentStep(3);
-    clearCart();
+  };
+
+  const handleOrderComplete = () => {
+    deleteMutation.mutate({ id: userId, deleteAll: true });
   };
 
   return (
@@ -119,7 +131,9 @@ export default function CheckoutPage() {
                 onComplete={handleCompleteOrder}
               />
             )}
-            {currentStep === 3 && <OrderComplete />}
+            {currentStep === 3 && (
+              <OrderComplete handleClick={handleOrderComplete} />
+            )}
           </div>
         </div>
       </main>

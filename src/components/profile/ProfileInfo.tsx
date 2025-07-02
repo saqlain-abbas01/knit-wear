@@ -33,14 +33,13 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   const mutation = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
-      toast("Profile info updated sucessfully");
+      toast.success("Profile info updated sucessfully");
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       const errorMessage = axiosError.response?.data?.message;
-      console.log("errorMessage", errorMessage);
-      toast(`Error while updating info: ${errorMessage}`);
+      toast.error(`Error while updating info: ${errorMessage}`);
     },
   });
 
@@ -89,7 +88,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
     console.log("image url", newImages);
     setImage(newImages);
   };
-  console.log("uploaded image", image);
+
   const handlePasswordChange = (email: string) => {
     changePasswordMutation.mutate(email);
   };
@@ -165,7 +164,6 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Changes</Button>
             </div>
           </form>
         ) : (
@@ -263,7 +261,6 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Changes</Button>
             </div>
           </form>
         ) : (
@@ -285,6 +282,8 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
           <Button
             variant="outline"
             onClick={() => handlePasswordChange(user.email)}
+            disabled={changePasswordMutation.isPending}
+            className="cursor-pointer"
           >
             Change Password
           </Button>

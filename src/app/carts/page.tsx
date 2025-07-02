@@ -324,7 +324,10 @@ export default function CartPage() {
                             <Button
                               variant="destructive"
                               onClick={() => {
-                                deleteMutation.mutate(item.id);
+                                deleteMutation.mutate({
+                                  id: item.id,
+                                  deleteAll: false,
+                                });
                               }}
                               disabled={deleteMutation.isPending}
                             >

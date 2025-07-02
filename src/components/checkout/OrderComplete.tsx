@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ShoppingBag } from "lucide-react";
 
-export default function OrderComplete() {
+export default function OrderComplete({ handleClick }: any) {
   // Generate a random order number
   const orderNumber = `ORD-${Math.floor(Math.random() * 1000000)
     .toString()
@@ -52,11 +52,9 @@ export default function OrderComplete() {
       </p>
 
       <div className="flex justify-center gap-4 pt-4">
-        <Button asChild variant="outline">
-          <Link href="/products">
-            <ShoppingBag className="h-4 w-4 mr-2" />
-            Continue Shopping
-          </Link>
+        <Button variant="outline" onClick={handleClick}>
+          <ShoppingBag className="h-4 w-4 mr-2" />
+          Continue Shopping
         </Button>
       </div>
     </div>

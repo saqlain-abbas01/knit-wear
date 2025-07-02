@@ -18,7 +18,6 @@ interface ProductCartPrpos {
 }
 
 const ProductCart = ({ products }: ProductCartPrpos) => {
-  console.log("products", products);
   const route = useRouter();
   const queryClient = useQueryClient();
   const cartUnseen = useCartStore((state) => state.markCartUnseen);
@@ -60,7 +59,7 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
         toast.error("Unauthorized", {
           description: `Please login first to add product to carts`,
           action: {
-            label: "Login In",
+            label: "Log In",
             onClick: () => route.push("/auth/signin"),
           },
         });
@@ -89,7 +88,7 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
         toast.error("Unauthorized", {
           description: `Please login first to add product to wishlist`,
           action: {
-            label: "Login In",
+            label: "Log In",
             onClick: () => route.push("/auth/signin"),
           },
         });

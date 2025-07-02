@@ -12,12 +12,14 @@ export default function ProductsPage() {
   const router = useRouter();
 
   const category = searchParams.get("category") || "all";
+  const type = searchParams.get("type") || "all";
   const size = searchParams.get("size") || "all";
   const sort = searchParams.get("_sort") || "newest";
   const brands = searchParams.getAll("brands");
 
   const [filters, setFilters] = useState({
     category: category || "all",
+    type: type || "all",
     size: "all",
     _sort: "newest",
     brands: [],
@@ -35,6 +37,17 @@ export default function ProductsPage() {
       query.set("category", filters.category);
     }
 
+    if (filters.type && filters.type !== "all") {
+      if (filters.category === "all") {
+        setFilters({
+          ...filters,
+          type: "all",
+        });
+      } else {
+        query.set("type", filters.type);
+      }
+    }
+
     if (filters.size && filters.size !== "all") {
       query.set("size", filters.size);
     }
@@ -49,6 +62,14 @@ export default function ProductsPage() {
 
     router.replace(`/products?${query.toString()}`);
   }, [filters, router]);
+
+  useEffect(() => {
+    // Reset type if category changed
+    setFilters((prev) => ({
+      ...prev,
+      type: "all", // or "all"
+    }));
+  }, [filters.category]);
 
   return (
     <main className="contianer mx-auto max-w-7xl  py-8 md:py-12">

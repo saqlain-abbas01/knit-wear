@@ -10,3 +10,14 @@ export const createOrder = async (data: any) => {
     throw error;
   }
 };
+
+export const removeCarts = async () => {
+  try {
+    const response = await api.delete("/carts/removeAll", {
+      withCredentials: true,
+    });
+    console.log("remove carts response", response.data);
+  } catch (error) {
+    throw error;
+  }
+};

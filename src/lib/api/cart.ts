@@ -1,6 +1,11 @@
 import { CartItem } from "../types";
 import api from "./axios";
 
+interface DeleteCartOptions {
+  id: string; // optional cart ID
+  deleteAll: boolean; // optional flag to delete all
+}
+
 export const createCart = async (data: any) => {
   try {
     const response = await api.post(`/carts`, data, {
@@ -36,14 +41,20 @@ export const updateCart = async (data: any) => {
   }
 };
 
-export const deleteCart = async (id: string) => {
-  console.log("cart id", id);
+export const deleteCart = async ({
+  id,
+  deleteAll = false,
+}: DeleteCartOptions) => {
   try {
-    const response = await api.delete(`/carts/${id}`, {
+    const url = deleteAll ? `/carts?all=true` : `/carts/${id}`;
+
+    const response = await api.delete(url, {
       withCredentials: true,
     });
+
     return response.data;
   } catch (error) {
+    console.error("Failed to delete cart:", error);
     throw error;
   }
 };

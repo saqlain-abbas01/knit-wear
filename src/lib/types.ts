@@ -10,6 +10,7 @@ export interface Product {
   stock: number;
   images: [string, ...string[]];
   category: "men" | "women";
+  subCategory: string;
   size: "xl" | "xs" | "s" | "m" | "l";
   colors: string[];
   brand: string;

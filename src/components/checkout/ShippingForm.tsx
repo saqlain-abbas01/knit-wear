@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useCheckout } from "@/context/checkout-context";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { ShippingFormValues, shippingSchema } from "@/lib/types";
+import { useUserStore } from "@/store/userStore";
 
 interface ShippingFormProps {
   onNext: () => void;
@@ -34,6 +35,7 @@ export default function ShippingForm({
   handleAddress,
 }: ShippingFormProps) {
   const { addressInfo, updateAddressInfo } = useCheckout();
+  const user = useUserStore((state) => state.user);
 
   const form = useForm<ShippingFormValues>({
     resolver: zodResolver(shippingSchema),
@@ -47,9 +49,39 @@ export default function ShippingForm({
     onNext();
   };
 
+  // ✅ Handler for "Use Default Address" button
+  const useDefaultAddress = () => {
+    if (user?.address) {
+      const { street, city, state, zipCode } = user.address;
+      if (street && city && state && zipCode) {
+        form.reset({
+          ...form.getValues(),
+          street,
+          city,
+          state,
+          zipCode,
+        });
+        toast.success("Default address applied");
+      } else {
+        toast.warning(
+          "Incomplete default address. Please update it in settings."
+        );
+      }
+    } else {
+      toast.warning("Please set a default address in your profile settings.");
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* ✅ Use Default Address Button */}
+        <div className="flex justify-end">
+          <Button type="button" variant="outline" onClick={useDefaultAddress}>
+            Use Default Address
+          </Button>
+        </div>
+
         <div className="bg-muted/30 p-6 rounded-lg">
           <h2 className="text-lg font-medium mb-4">Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -19,7 +19,13 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/lib/types";
 
-export default function ProfileSidebar() {
+export default function ProfileSidebar({
+  activeTab,
+  onChangeTab,
+}: {
+  activeTab: string;
+  onChangeTab: (tab: string) => void;
+}) {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -27,33 +33,21 @@ export default function ProfileSidebar() {
   const navItems = [
     {
       name: "Personal Info",
+      value: "profile",
       href: "/profile?tab=profile",
       icon: User,
     },
     {
       name: "Order History",
+      value: "orders",
       href: "/profile?tab=orders",
       icon: Package,
     },
     {
-      name: "Addresses",
-      href: "/profile?tab=addresses",
-      icon: MapPin,
-    },
-    {
       name: "Wishlist",
+      value: "wishlist",
       href: "/profile?tab=wishlist",
       icon: Heart,
-    },
-    {
-      name: "Payment Methods",
-      href: "/profile?tab=payment",
-      icon: CreditCard,
-    },
-    {
-      name: "Account Settings",
-      href: "/profile?tab=settings",
-      icon: Settings,
     },
   ];
 
@@ -84,15 +78,13 @@ export default function ProfileSidebar() {
             key={item.name}
             variant="ghost"
             className={cn(
-              "w-full justify-start gap-2",
-              pathname === item.href && "bg-muted"
+              "w-full justify-start gap-2 cursor-pointer",
+              activeTab === item.value && "bg-muted"
             )}
-            asChild
+            onClick={() => onChangeTab(item.value)} // <- switch tab
           >
-            <Link href={item.href}>
-              <item.icon className="h-4 w-4" />
-              {item.name}
-            </Link>
+            <item.icon className="h-4 w-4" />
+            {item.name}
           </Button>
         ))}
       </div>

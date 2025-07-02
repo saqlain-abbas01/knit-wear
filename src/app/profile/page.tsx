@@ -6,24 +6,28 @@ import ProfileSidebar from "@/components/profile/ProfileSideBar";
 import { useUserStore } from "@/store/userStore";
 import OrderHistory from "@/components/profile/OrderHistory";
 import WishList from "@/components/WishList";
+import { useState } from "react";
 
 export default function ProfilePage() {
-  // const data = { name: "string", email: "string@gmail.com" };
+  const [activeTab, setActiveTab] = useState("profile");
   const user = useUserStore((state) => state.user);
-
+  console.log("activeTab", activeTab);
   return (
     <main className="container mx-auto max-w-7xl py-8 md:py-12">
       <h1 className="text-3xl font-bold mb-8">My Account</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
-        <ProfileSidebar />
+        <ProfileSidebar activeTab={activeTab} onChangeTab={setActiveTab} />
 
         <div>
-          <Tabs defaultValue="profile" className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="mb-8">
               <TabsTrigger value="profile">Personal Info</TabsTrigger>
               <TabsTrigger value="orders">Order History</TabsTrigger>
-              <TabsTrigger value="addresses">Addresses</TabsTrigger>
               <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
             </TabsList>
 
@@ -55,15 +59,6 @@ export default function ProfilePage() {
                   </p>
                 </div>
               )}
-            </TabsContent>
-
-            <TabsContent value="addresses">
-              <div className="bg-muted/30 p-6 rounded-lg">
-                <h2 className="text-lg font-medium mb-4">Saved Addresses</h2>
-                <p className="text-muted-foreground">
-                  You haven't saved any addresses yet.
-                </p>
-              </div>
             </TabsContent>
 
             <TabsContent value="wishlist">

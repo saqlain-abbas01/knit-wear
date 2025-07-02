@@ -33,7 +33,9 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                   <Navbar />
                 </Suspense>
-                <div className="flex-1 overflow-x-hidden">{children}</div>
+                <div className="flex-1 overflow-x-hidden px-4 sm:px-10">
+                  {children}
+                </div>
                 <Footer />
               </div>
             </CartProvider>
