@@ -6,11 +6,20 @@ import ProfileSidebar from "@/components/profile/ProfileSideBar";
 import { useUserStore } from "@/store/userStore";
 import OrderHistory from "@/components/profile/OrderHistory";
 import WishList from "@/components/WishList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
+  const searchParams = useSearchParams();
   const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   console.log("activeTab", activeTab);
   return (
     <main className="container mx-auto max-w-7xl py-8 md:py-12">
@@ -48,7 +57,7 @@ export default function ProfilePage() {
 
             <TabsContent value="orders">
               {user ? (
-                <OrderHistory orders={user?.orders} />
+                <OrderHistory user={user} />
               ) : (
                 <div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-gray-500">
                   <span className="text-lg font-medium">

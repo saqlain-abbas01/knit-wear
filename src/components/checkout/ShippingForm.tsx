@@ -57,7 +57,6 @@ export default function ShippingForm({
       if (street && city && state && zipCode) {
         form.reset({
           ...form.getValues(),
-
           street,
           city,
           state,

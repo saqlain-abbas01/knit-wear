@@ -53,6 +53,8 @@ export default function ProductPage() {
   const id = params.id;
   const category = searchParams.get("category");
   const cartUnseen = useCartStore((state) => state.markCartUnseen);
+  const setTotalItems = useCartStore((state) => state.setTotalItems);
+  const totalItems = useCartStore((state) => state.totalItems);
 
   const [filters, setFilters] = useState({
     category: category,
@@ -98,6 +100,7 @@ export default function ProductPage() {
         },
       });
       cartUnseen();
+      setTotalItems(totalItems + 1);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },
     onError: (error: AxiosError) => {
@@ -288,7 +291,7 @@ export default function ProductPage() {
 
                 <div className="flex items-center gap-4 flex-wrap">
                   {isOnSale ? (
-                    <div className="flex items-baseline gap-3">
+                    <div className="flex flex-wrap items-baseline gap-3 ">
                       <span className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                         ${product.price.toFixed(2)}
                       </span>

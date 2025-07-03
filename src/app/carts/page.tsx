@@ -149,7 +149,7 @@ export default function CartPage() {
 
   if (error)
     return (
-      <div className="container mx-auto max-w-7xl py-16 px-4 flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <div className="container mx-auto max-w-7xl py-16  flex flex-col items-center justify-center min-h-[60vh] text-center">
         <div className="bg-red-50 text-red-700 p-6 rounded-lg max-w-md">
           <h2 className="text-xl font-semibold mb-2">Error Loading Cart</h2>
           <p>We couldn't fetch your cart items. Please try again later.</p>
@@ -162,7 +162,7 @@ export default function CartPage() {
 
   if (carts.length === 0) {
     return (
-      <div className="container mx-auto max-w-7xl py-16 px-4 flex flex-col items-center justify-center min-h-[70vh] text-center">
+      <div className="container mx-auto max-w-7xl py-16  flex flex-col items-center justify-center min-h-[70vh] text-center">
         <div className="bg-muted p-10 rounded-xl max-w-md">
           <div className="bg-background rounded-full p-4 w-20 h-20 mx-auto mb-6 flex items-center justify-center">
             <ShoppingBag className="h-10 w-10 text-muted-foreground" />
@@ -180,7 +180,7 @@ export default function CartPage() {
   }
 
   return (
-    <main className="container mx-auto max-w-7xl py-10 md:py-16 px-4">
+    <main className="container mx-auto max-w-7xl py-10 md:py-16">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10">
         <div>
           <h1 className="text-3xl font-bold">Shopping Cart</h1>

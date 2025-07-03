@@ -11,6 +11,19 @@ export const createOrder = async (data: any) => {
   }
 };
 
+export const fetchOrders = async (id: string) => {
+  console.log("fetch with id", id);
+  try {
+    const response = await api.get(`/orders/${id}`, {
+      withCredentials: true,
+    });
+    console.log("response orders", response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const removeCarts = async () => {
   try {
     const response = await api.delete("/carts/removeAll", {

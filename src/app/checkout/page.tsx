@@ -54,7 +54,6 @@ export default function CheckoutPage() {
   });
 
   if (carts.length === 0 && typeof window !== "undefined") {
-    router.push("/carts");
     toast.error("Your cart is empty", {
       description:
         "Please add items to your cart before proceeding to checkout",
@@ -113,7 +112,7 @@ export default function CheckoutPage() {
 
           <CheckoutStepper steps={steps} currentStep={currentStep} />
 
-          <div className="mt-8">
+          <div className="mt-8 py-10 sm:py-6">
             {currentStep === 0 && (
               <ShippingForm
                 onNext={handleNextStep}

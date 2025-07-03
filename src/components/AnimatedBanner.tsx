@@ -40,7 +40,7 @@ export default function AnimatedBanner() {
   };
 
   return (
-    <div className="relative h-[380px] md:h-[480px] w-screen lg:h-[530px] left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
+    <div className="relative h-[480px] w-screen md:h-[530px] left-[50%] right-[50%] mx-[-50vw] overflow-hidden">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentBanner}

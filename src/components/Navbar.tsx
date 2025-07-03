@@ -20,6 +20,7 @@ import {
   Shirt,
   Zap,
   Moon,
+  Home,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -337,16 +338,24 @@ export default function Navbar() {
                         </div>
                       </div>
                       <DropdownMenuSeparator />
+                      {pathname !== "/" && (
+                        <DropdownMenuItem onClick={() => router.push("/")}>
+                          <Home className="mr-2 h-4 w-4" />
+                          Home
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem onClick={() => router.push("/profile")}>
                         <Settings className="mr-2 h-4 w-4" />
                         Profile Settings
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push("/orders")}>
+                      <DropdownMenuItem
+                        onClick={() => router.push("/profile?tab=orders")}
+                      >
                         <Package className="mr-2 h-4 w-4" />
                         My Orders
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => router.push("/wishlist")}
+                        onClick={() => router.push("/profile?tab=wishlist")}
                       >
                         <Heart className="mr-2 h-4 w-4" />
                         Wishlist
