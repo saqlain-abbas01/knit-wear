@@ -27,7 +27,7 @@ export default function OrderReview({
   onComplete,
 }: OrderReviewProps) {
   const { addressInfo, paymentInfo } = useCheckout();
-
+  console.log("items", items);
   // Calculate additional costs
   const shippingCost = 5.99;
   const tax = subtotal * 0.08; // 8% tax rate
@@ -112,12 +112,12 @@ export default function OrderReview({
         <h2 className="text-lg font-medium mb-4">Order Summary</h2>
 
         <div className="space-y-4">
-          {items.map((item) => (
+          {items?.map((item) => (
             <div key={item.product.id} className="flex gap-4">
               <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
                 <Image
-                  src={item.product.images[0] || "/placeholder.svg"}
-                  alt={item.product.name}
+                  src={item?.product?.images?.[0] ?? "/placeholder.svg"}
+                  alt={item.product.name ?? "image"}
                   fill
                   className="object-cover"
                 />

@@ -37,11 +37,13 @@ export default function CartPage() {
   const queryClient = useQueryClient();
   const [carts, setCarts] = useState<CartItem[]>([]);
   const {
+    storeCarts,
     setStoreCarts,
     setSubtotal,
     totalItems,
     setTotalItems,
     markCartSeen,
+    removeCartItem,
   } = useCartStore();
   let subtotal = 0;
   let totalItemsInCart = 0;
@@ -79,6 +81,7 @@ export default function CartPage() {
   }, [data]);
 
   console.log("carts", carts);
+  console.log("store carts", storeCarts);
 
   const updateMutation = useMutation({
     mutationFn: updateCart,
@@ -93,8 +96,10 @@ export default function CartPage() {
 
   const deleteMutation = useMutation({
     mutationFn: deleteCart,
-    onSuccess: () => {
-      toast.success("Item removed from cart");
+    onSuccess: (data) => {
+      console.log("remove data", data.cart.id);
+      toast.success("Item removed from cart id");
+      removeCartItem(data.cart.id);
       setTotalItems(totalItems - 1);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },

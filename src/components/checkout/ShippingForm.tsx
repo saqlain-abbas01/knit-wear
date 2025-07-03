@@ -53,9 +53,11 @@ export default function ShippingForm({
   const useDefaultAddress = () => {
     if (user?.address) {
       const { street, city, state, zipCode } = user.address;
+
       if (street && city && state && zipCode) {
         form.reset({
           ...form.getValues(),
+
           street,
           city,
           state,
@@ -75,7 +77,6 @@ export default function ShippingForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* ✅ Use Default Address Button */}
         <div className="flex justify-end">
           <Button type="button" variant="outline" onClick={useDefaultAddress}>
             Use Default Address

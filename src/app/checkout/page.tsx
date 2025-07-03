@@ -9,13 +9,12 @@ import PaymentForm from "@/components/checkout/PaymentForm";
 import OrderReview from "@/components/checkout/OrderReview";
 import OrderComplete from "@/components/checkout/OrderComplete";
 import { toast } from "sonner";
-import { deleteCart, fecthCarts } from "@/lib/api/cart";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { deleteCart } from "@/lib/api/cart";
+import { useMutation } from "@tanstack/react-query";
 import { useCartStore } from "@/store/cartStore";
 import { ShippingFormValues } from "@/lib/types";
-import { createOrder, removeCarts } from "@/lib/api/order";
+import { createOrder } from "@/lib/api/order";
 import { useUserStore } from "@/store/userStore";
-import { useStore } from "zustand";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -26,6 +25,7 @@ export default function CheckoutPage() {
 
   const carts = useCartStore((state) => state.storeCarts);
   const totalItems = useCartStore((state) => state.totalItems);
+  const setTotalItems = useCartStore((state) => state.setTotalItems);
   const subtotal = useCartStore((state) => state.subtotal);
   const user = useUserStore((state) => state.user);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -48,6 +48,9 @@ export default function CheckoutPage() {
 
   const deleteMutation = useMutation({
     mutationFn: deleteCart,
+    onSuccess: () => {
+      setTotalItems(0);
+    },
   });
 
   if (carts.length === 0 && typeof window !== "undefined") {
@@ -98,6 +101,8 @@ export default function CheckoutPage() {
 
   const handleOrderComplete = () => {
     deleteMutation.mutate({ id: userId, deleteAll: true });
+    clearCart();
+    router.push("/products");
   };
 
   return (

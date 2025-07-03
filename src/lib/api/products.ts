@@ -8,7 +8,6 @@ export const fetchRecentProducts = async () => {
 
 export const fetchProductById = async (id: any) => {
   const response = await api.get(`/products/${id}`);
-
   return response.data;
 };
 

@@ -42,6 +42,7 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
   const createCartMutation = useMutation({
     mutationFn: createCart,
     onSuccess: (data) => {
+      console.log("added cart", data);
       toast.success(`Added to cart successfully:`, {
         action: {
           label: "View Cart",
@@ -49,7 +50,7 @@ const ProductCart = ({ products }: ProductCartPrpos) => {
         },
       });
       cartUnseen();
-      setStoreCarts(data.cart);
+      // setStoreCarts(data.cart);
       setTotalItems(totalItmes + 1);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },

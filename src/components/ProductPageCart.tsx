@@ -50,7 +50,6 @@ const ProductPageCart = ({ products }: ProductCartProps) => {
         },
       });
       cartUnseen();
-      setStoreCarts(data.cart);
       setTotalItems(totalItmes + 1);
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },

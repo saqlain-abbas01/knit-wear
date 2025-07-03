@@ -7,6 +7,7 @@ interface CartState {
   subtotal: number;
   cartSeen: boolean;
 
+  removeCartItem: (id: string) => void;
   setStoreCarts: (items: CartItem[]) => void;
   setTotalItems: (count: number) => void;
   setSubtotal: (amount: number) => void;
@@ -32,6 +33,11 @@ export const useCartStore = create<CartState>((set) => ({
         storeCarts: [...state.storeCarts, ...filteredItems],
       };
     }),
+  removeCartItem: (id: string) =>
+    set((state) => ({
+      storeCarts: state.storeCarts.filter((item) => item.id !== id),
+    })),
+
   setTotalItems: (count) => set({ totalItems: count }),
   setSubtotal: (amount) => set({ subtotal: amount }),
 

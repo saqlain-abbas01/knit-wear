@@ -166,7 +166,7 @@ export default function ProductPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
@@ -174,7 +174,7 @@ export default function ProductPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Product not found
@@ -188,7 +188,7 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <div className="min-h-screen bg-background">
       <main className="container mx-auto max-w-7xl px-4 py-8 lg:py-12 ">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Image Gallery - 7 columns */}
@@ -198,7 +198,7 @@ export default function ProductPage() {
               <div className="relative mb-6 group">
                 {isOnSale && (
                   <div className="absolute top-6 left-6 z-20">
-                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg text-sm px-3 py-1">
+                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white  border-0 shadow-lg text-sm px-3 py-1">
                       -{Math.round(product.discountPercentage)}% OFF
                     </Badge>
                   </div>
@@ -208,7 +208,7 @@ export default function ProductPage() {
                   <Button
                     size="icon"
                     variant="secondary"
-                    className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg"
+                    className=" backdrop-blur-sm  shadow-lg"
                     onClick={() => createWishListMutation.mutate(product.id)}
                   >
                     <Heart
@@ -282,7 +282,7 @@ export default function ProductPage() {
                   </div>
                 </div>
 
-                <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-foreground leading-tight">
                   {product?.name}
                 </h1>
 
@@ -300,14 +300,14 @@ export default function ProductPage() {
                       </Badge>
                     </div>
                   ) : (
-                    <span className="text-4xl font-bold text-slate-900">
+                    <span className="text-4xl font-bold text-slate-900 dark:text-foreground">
                       ${product?.price.toFixed(2)}
                     </span>
                   )}
                 </div>
 
                 {/* Trust Indicators */}
-                <div className="flex items-center gap-6 text-sm text-slate-600">
+                <div className="flex items-center gap-6 text-sm text-slate-600 dark:text-foreground">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4" />
                     <span>234 people viewing</span>
@@ -321,19 +321,19 @@ export default function ProductPage() {
 
               {/* Product Details Tabs */}
               <Tabs defaultValue="description" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-slate-100">
+                <TabsList className="grid w-full grid-cols-2 ">
                   <TabsTrigger value="description">Description</TabsTrigger>
                   <TabsTrigger value="features">Features</TabsTrigger>
                 </TabsList>
                 <TabsContent value="description" className="mt-4">
-                  <p className="text-slate-700 leading-relaxed">
+                  <p className="text-slate-700 dark:text-foreground leading-relaxed">
                     {product?.description}
                   </p>
                 </TabsContent>
                 <TabsContent value="features" className="mt-4">
-                  <ul className="space-y-2 text-slate-700">
+                  <ul className="space-y-2 text-slate-700 dark:text-foreground">
                     <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
+                      <Check className="h-4 w-4 text-green-500 " />
                       Premium quality materials
                     </li>
                     <li className="flex items-center gap-2">
@@ -355,7 +355,9 @@ export default function ProductPage() {
               {/* Size Selection */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-slate-900">Size</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-foreground">
+                    Size
+                  </h3>
                   <Button
                     variant="link"
                     className="h-auto p-0 text-sm text-primary hover:text-primary/80"
@@ -378,7 +380,7 @@ export default function ProductPage() {
                       />
                       <Label
                         htmlFor={`size-${size.value}`}
-                        className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-slate-200 bg-white font-medium transition-all hover:border-primary hover:shadow-md peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-data-[state=checked]:shadow-lg"
+                        className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-slate-200  font-medium transition-all hover:border-primary hover:shadow-md peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-data-[state=checked]:shadow-lg"
                       >
                         {size.label}
                       </Label>
@@ -389,11 +391,11 @@ export default function ProductPage() {
 
               {/* Quantity */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-foreground">
                   Quantity
                 </h3>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center border-2 border-slate-200 rounded-xl bg-white shadow-sm">
+                  <div className="flex items-center border-2 border-slate-200 rounded-xl  shadow-sm">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -403,7 +405,7 @@ export default function ProductPage() {
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <div className="flex h-12 w-16 items-center justify-center border-x-2 border-slate-200 bg-slate-50 font-semibold text-slate-900">
+                    <div className="flex h-12 w-16 items-center justify-center border-x-2 border-slate-200  font-semibold text-slate-900 dark:text-foreground">
                       {quantity}
                     </div>
                     <Button
@@ -416,7 +418,7 @@ export default function ProductPage() {
                     </Button>
                   </div>
                   {quantity > 1 && (
-                    <div className="text-sm text-slate-600">
+                    <div className="text-sm text-slate-600 dark:text-foreground">
                       <span className="font-medium">
                         Total: ${(product?.price * quantity).toFixed(2)}
                       </span>
@@ -454,7 +456,7 @@ export default function ProductPage() {
               </div>
 
               {/* Trust Badges */}
-              <Card className="bg-gradient-to-r from-slate-50 to-slate-100 border-0 shadow-sm">
+              <Card className=" border-0 shadow-sm">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="flex items-center gap-3">
@@ -462,10 +464,10 @@ export default function ProductPage() {
                         <Truck className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm text-slate-900">
+                        <p className="font-semibold text-sm text-slate-900 dark:text-foreground">
                           Free Shipping
                         </p>
-                        <p className="text-xs text-slate-600">
+                        <p className="text-xs text-slate-600 dark:text-foreground">
                           On orders over $50
                         </p>
                       </div>
@@ -476,10 +478,10 @@ export default function ProductPage() {
                         <RotateCcw className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm text-slate-900">
+                        <p className="font-semibold text-sm text-slate-900 dark:text-foreground">
                           Easy Returns
                         </p>
-                        <p className="text-xs text-slate-600">
+                        <p className="text-xs text-slate-600 dark:text-foreground">
                           30-day return policy
                         </p>
                       </div>
@@ -490,10 +492,12 @@ export default function ProductPage() {
                         <Shield className="h-5 w-5 text-purple-600" />
                       </div>
                       <div>
-                        <p className="font-semibold text-sm text-slate-900">
+                        <p className="font-semibold text-sm text-slate-900 dark:text-foreground">
                           Secure Payment
                         </p>
-                        <p className="text-xs text-slate-600">SSL encrypted</p>
+                        <p className="text-xs text-slate-600 dark:text-foreground">
+                          SSL encrypted
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -519,10 +523,10 @@ export default function ProductPage() {
                 Recommended for you
               </span>
             </div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900">
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-foreground">
               You may also like
             </h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">
+            <p className="text-slate-600 dark:text-foreground max-w-2xl mx-auto">
               Discover similar products that match your style and preferences
             </p>
           </div>

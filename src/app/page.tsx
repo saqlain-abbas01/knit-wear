@@ -32,12 +32,11 @@ export default function Home() {
 
       <CategoryShowcase />
 
-      <section className="py-12 md:py-24">
+      <section id="new-arrivals" className="py-12 md:py-24">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">
             New Arrivals
           </h2>
-      
         </div>
         <FeaturedProducts />
       </section>

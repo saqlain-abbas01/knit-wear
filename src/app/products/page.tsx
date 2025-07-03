@@ -64,11 +64,12 @@ export default function ProductsPage() {
   }, [filters, router]);
 
   useEffect(() => {
-    // Reset type if category changed
-    setFilters((prev) => ({
-      ...prev,
-      type: "all", // or "all"
-    }));
+    if (filters.category === "all") {
+      setFilters((prev) => ({
+        ...prev,
+        type: "all",
+      }));
+    }
   }, [filters.category]);
 
   return (

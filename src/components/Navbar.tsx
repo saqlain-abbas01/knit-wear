@@ -162,7 +162,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const carts = useCartStore((state) => state.storeCarts);
+  const carts = useCartStore((state) => state.totalItems);
   const cartSeen = useCartStore((state) => state.cartSeen);
   const queryClient = useQueryClient();
 
@@ -207,8 +207,6 @@ export default function Navbar() {
   const handleLogout = () => {
     mutation.mutate();
   };
-
-  const cartItemCount = carts.length;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -299,7 +297,7 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
                     {profile?.image ? (
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-6 w-6">
                         <AvatarImage
                           src={profile.image || "/placeholder.svg"}
                           alt="User Avatar"
@@ -377,12 +375,12 @@ export default function Navbar() {
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/carts" onClick={() => markCartSeen()}>
                   <ShoppingCart className="h-5 w-5" />
-                  {cartItemCount > 0 && (
+                  {carts > 0 && !cartSeen && (
                     <Badge
                       variant="destructive"
                       className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
                     >
-                      {cartItemCount > 99 ? "99+" : cartItemCount}
+                      {carts > 99 ? "99+" : carts}
                     </Badge>
                   )}
                   <span className="sr-only">Shopping cart</span>
@@ -446,13 +444,13 @@ export default function Navbar() {
                     <NavigationMenuTrigger
                       className={cn(
                         currentPath.includes("category=women") &&
-                          "bg-accent text-accent-foreground"
+                          "bg-transparent text-accent-foreground cursor-pointer"
                       )}
                     >
                       Women
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="grid w-[400px] gap-3 p-4">
+                      <div className="grid w-lg gap-3 p-4">
                         <div className="row-span-3">
                           <div className="mb-3">
                             <h4 className="text-sm font-medium leading-none mb-1">
@@ -462,24 +460,23 @@ export default function Navbar() {
                               Premium intimates & loungewear
                             </p>
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-3 gap-6 ">
                             {womenCategories.map((category) => {
                               const IconComponent = category.icon;
                               return (
                                 <Link
                                   key={category.path}
                                   href={category.path}
-                                  legacyBehavior
                                   passHref
                                 >
-                                  <NavigationMenuLink className="col-span-1 group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                  <NavigationMenuLink className="col-span-1 w-full group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                                     <div className="flex items-center gap-2">
                                       <IconComponent className="h-4 w-4 text-muted-foreground" />
                                       <div className="text-sm font-medium leading-none">
                                         {category.name}
                                       </div>
                                     </div>
-                                    <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                                    <p className="line-clamp-2 pl-6 text-xs leading-snug text-muted-foreground">
                                       {category.description}
                                     </p>
                                   </NavigationMenuLink>
@@ -497,13 +494,13 @@ export default function Navbar() {
                     <NavigationMenuTrigger
                       className={cn(
                         currentPath.includes("category=men") &&
-                          "bg-accent text-accent-foreground"
+                          "bg-accent text-accent-foreground cursor-pointer"
                       )}
                     >
                       Men
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="grid w-[400px] gap-3 p-4">
+                      <div className="grid w-lg gap-3 p-4">
                         <div className="row-span-3">
                           <div className="mb-3">
                             <h4 className="text-sm font-medium leading-none mb-1">
@@ -513,7 +510,7 @@ export default function Navbar() {
                               Comfort & style essentials
                             </p>
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-3 gap-4">
                             {menCategories.map((category) => {
                               const IconComponent = category.icon;
                               return (
@@ -530,7 +527,7 @@ export default function Navbar() {
                                         {category.name}
                                       </div>
                                     </div>
-                                    <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                                    <p className="line-clamp-2 pl-6 text-xs leading-snug text-muted-foreground">
                                       {category.description}
                                     </p>
                                   </NavigationMenuLink>
@@ -548,16 +545,11 @@ export default function Navbar() {
               {/* Featured Links */}
               <div className="ml-auto flex items-center gap-6">
                 <Link
-                  href="/products?filter=new"
-                  className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+                  href="#new-arrivals"
+                  scroll={true}
+                  className="text-sm text-primary font-medium  hover:text-foreground transition-colors"
                 >
                   New Arrivals
-                </Link>
-                <Link
-                  href="/products?filter=sale"
-                  className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
-                >
-                  Sale
                 </Link>
               </div>
             </nav>
