@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProductGrid from "@/components/ProductGrid";
 import ProductFilters from "@/components/ProductFilters";
 import { fetchFilterProducts } from "@/lib/api/products";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -17,18 +17,46 @@ export default function ProductsPage() {
   const sort = searchParams.get("_sort") || "newest";
   const brands = searchParams.getAll("brands");
 
+  // Safe limit parsing: always use a valid integer between 1 and 100
+  let rawLimit = searchParams.get("_limit");
+  let limit = parseInt(
+    Array.isArray(rawLimit) ? rawLimit[0] : rawLimit || "9",
+    10
+  );
+  if (!Number.isFinite(limit) || limit < 1 || limit > 100) limit = 20;
+
   const [filters, setFilters] = useState({
     category: category || "all",
     type: type || "all",
-    size: "all",
-    _sort: "newest",
-    brands: [],
+    size: size || "all",
+    _sort: sort || "newest",
+    brands: brands || [],
   });
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["products", filters],
-    queryFn: fetchFilterProducts,
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    error,
+  } = useInfiniteQuery({
+    queryKey: ["products", filters, limit],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchFilterProducts({
+        filters,
+        params: { _page: pageParam, _limit: limit },
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.products || lastPage.products.length < limit)
+        return undefined;
+      return allPages.length + 1;
+    },
+    initialPageParam: 1,
   });
+
+  const products = data?.pages.flatMap((page) => page.products) || [];
 
   useEffect(() => {
     const query = new URLSearchParams();
@@ -60,8 +88,10 @@ export default function ProductsPage() {
       query.append("brands", brand);
     });
 
+    // Only set _limit in the URL, do not set _page or any product ids
+    query.set("_limit", limit.toString());
     router.replace(`/products?${query.toString()}`);
-  }, [filters, router]);
+  }, [filters, limit, router]);
 
   useEffect(() => {
     if (filters.category === "all") {
@@ -84,11 +114,21 @@ export default function ProductsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-14">
         <ProductFilters filters={filters} setFilters={setFilters} />
-        <ProductGrid
-          products={data?.products}
-          isLoading={isLoading}
-          error={error}
-        />
+        <div>
+          <ProductGrid
+            products={products}
+            isLoading={isLoading}
+            error={error}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+          {isFetchingNextPage && (
+            <div className="flex justify-center mt-4">
+              <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary block" />
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );

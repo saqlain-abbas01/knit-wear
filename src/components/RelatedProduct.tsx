@@ -2,24 +2,53 @@
 import React from "react";
 import { Skeleton } from "./ui/skeleton";
 import { fetchFilterProducts } from "@/lib/api/products";
-import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/lib/types";
-import Link from "next/link";
-import Image from "next/image";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
-import ProductCart from "./ProductCart";
+import ProductPageCart from "./ProductPageCart";
+import { useRouter, useSearchParams } from "next/navigation";
+
+const PAGE_SIZE = 20;
 
 const RelatedProduct = ({ filters }: any) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Set limit in URL if it changes, but do not set page
+  React.useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("_limit", PAGE_SIZE.toString());
+    router.replace(`?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, searchParams]);
+
   const {
-    data: products,
+    data,
     isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     error,
-  } = useQuery({
-    queryKey: ["products", filters],
-    queryFn: fetchFilterProducts,
+  } = useInfiniteQuery({
+    queryKey: ["products", filters, PAGE_SIZE],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchFilterProducts({
+        filters,
+        params: { _page: pageParam, _limit: PAGE_SIZE },
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.products || lastPage.products.length < PAGE_SIZE)
+        return undefined;
+      return allPages.length + 1;
+    },
+    initialPageParam: 1,
   });
-  const relatedProducts = products;
+
+  const products = data?.pages.flatMap((page) => page.products) || [];
+
+  console.log("Related products:", products);
+
   if (error) {
     return (
       <div className="w-full h-full flex flex-col justify-center items-center gap-4 p-8 text-center">
@@ -46,7 +75,7 @@ const RelatedProduct = ({ filters }: any) => {
     <>
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: PAGE_SIZE }).map((_, i) => (
             <div key={i} className="space-y-3">
               <Skeleton className="w-full aspect-square rounded-lg" />
               <Skeleton className="h-4 w-1/2" />
@@ -57,8 +86,26 @@ const RelatedProduct = ({ filters }: any) => {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <ProductCart products={relatedProducts.products} />
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <ProductPageCart products={products} />
+          </div>
+          {hasNextPage && (
+            <div className="flex justify-center mt-4">
+              <Button
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="px-4 py-2 mt-4"
+              >
+                {isFetchingNextPage ? "Loading..." : "Load More"}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+      {isFetchingNextPage && !hasNextPage && (
+        <div className="flex justify-center mt-4">
+          <Skeleton className="w-16 h-16 rounded-full" />
         </div>
       )}
     </>

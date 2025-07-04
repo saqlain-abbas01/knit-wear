@@ -213,7 +213,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Top Bar */}
       <div className="border-b border-border/40">
-        <div className="container mx-auto max-w-7xl">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-10">
           <div className="flex  h-16 items-center justify-between">
             {/* Mobile Menu */}
             <Sheet>
@@ -308,7 +308,7 @@ export default function Navbar() {
                         </AvatarFallback>
                       </Avatar>
                     ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
                         <User className="h-4 w-4" />
                       </div>
                     )}
@@ -428,8 +428,8 @@ export default function Navbar() {
               : "opacity-100 translate-y-0"
           )}
         >
-          <div className="container mx-auto max-w-7xl">
-            <nav className="flex h-14 items-center px-4">
+          <div className="container mx-auto max-w-7xl px-4 sm:px-10">
+            <nav className="flex h-14 items-center">
               {/* Navigation Menu */}
               <NavigationMenu>
                 <NavigationMenuList className="gap-8">
@@ -552,7 +552,10 @@ export default function Navbar() {
               </NavigationMenu>
 
               {/* Featured Links */}
-              <div className="ml-auto flex items-center gap-6">
+              <div
+                className="ml-auto flex items-center gap-1
+              "
+              >
                 <Link
                   href="#new-arrivals"
                   scroll={true}
@@ -560,6 +563,13 @@ export default function Navbar() {
                 >
                   New Arrivals
                 </Link>
+                <Button
+                  variant={"ghost"}
+                  className="text-sm  font-medium text-red-600"
+                  onClick={() => router.push("/sale")}
+                >
+                  Sale
+                </Button>
               </div>
             </nav>
           </div>

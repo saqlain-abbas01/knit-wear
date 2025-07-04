@@ -11,12 +11,18 @@ interface ProductGridProps {
   products: Product[];
   isLoading: boolean;
   error: Error | null;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
 }
 
 export default function ProductGrid({
   products,
   isLoading,
   error,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
 }: ProductGridProps) {
   if (isLoading) {
     return (
@@ -77,8 +83,21 @@ export default function ProductGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <ProductPageCart products={products} />
-    </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ProductPageCart products={products} />
+      </div>
+      {hasNextPage && fetchNextPage && (
+        <div className="flex justify-center mt-4">
+          <Button
+            onClick={fetchNextPage}
+            disabled={isFetchingNextPage}
+            className="px-4 py-2 mt-4"
+          >
+            {isFetchingNextPage ? "Loading..." : "Load More"}
+          </Button>
+        </div>
+      )}
+    </>
   );
 }
