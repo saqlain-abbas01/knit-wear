@@ -53,6 +53,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
+import { connectSocket, disconnectSocket } from "@/lib/connectSocket";
 
 const routes = [
   { name: "Home", path: "/" },
@@ -187,6 +188,7 @@ export default function Navbar() {
       queryClient.clear();
       router.push("/auth/signin");
       setProfile(undefined);
+      disconnectSocket();
       router.refresh();
     },
     onError: (error) => {
@@ -198,6 +200,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (data?.user) {
+      connectSocket(data.user.id);
       setUser(data.user);
       setProfile(data.user);
     } else if (!isLoading && !data?.user) {
@@ -419,162 +422,161 @@ export default function Navbar() {
       )}
 
       {/* Desktop Navigation - Only on Homepage */}
-      {pathname === "/" && (
-        <div
-          className={cn(
-            "hidden border-b border-border/40 lg:block transition-all duration-300 ease-in-out",
-            isScrolled
-              ? "opacity-0 -translate-y-full h-0 overflow-hidden"
-              : "opacity-100 translate-y-0"
-          )}
-        >
-          <div className="container mx-auto max-w-7xl px-4 sm:px-10">
-            <nav className="flex h-14 items-center">
-              {/* Navigation Menu */}
-              <NavigationMenu>
-                <NavigationMenuList className="gap-8">
-                  {/* Home Link */}
-                  <NavigationMenuItem>
-                    <Link href="/" passHref>
-                      <NavigationMenuLink
-                        className={cn(
-                          "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                          currentPath === "/" &&
-                            "bg-accent text-accent-foreground"
-                        )}
-                      >
-                        Home
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
 
-                  {/* Women Navigation */}
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger
+      <div
+        className={cn(
+          "hidden border-b border-border/40 lg:block transition-all duration-300 ease-in-out",
+          isScrolled
+            ? "opacity-0 -translate-y-full h-0 overflow-hidden"
+            : "opacity-100 translate-y-0"
+        )}
+      >
+        <div className="container mx-auto max-w-7xl px-4 sm:px-10">
+          <nav className="flex h-14 items-center">
+            {/* Navigation Menu */}
+            <NavigationMenu>
+              <NavigationMenuList className="gap-8">
+                {/* Home Link */}
+                <NavigationMenuItem>
+                  <Link href="/" passHref>
+                    <NavigationMenuLink
                       className={cn(
-                        currentPath.includes("category=women") &&
-                          "bg-transparent text-accent-foreground cursor-pointer"
+                        "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
+                        currentPath === "/" &&
+                          "bg-accent text-accent-foreground"
                       )}
                     >
-                      Women
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid w-lg gap-3 p-4">
-                        <div className="row-span-3">
-                          <div className="mb-3">
-                            <h4 className="text-sm font-medium leading-none mb-1">
-                              Women's Collection
-                            </h4>
-                            <p className="text-xs leading-snug text-muted-foreground">
-                              Premium intimates & loungewear
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-3 gap-6 ">
-                            {womenCategories.map((category) => {
-                              const IconComponent = category.icon;
-                              return (
-                                <Link
-                                  key={category.path}
-                                  href={category.path}
-                                  passHref
-                                >
-                                  <NavigationMenuLink className="col-span-1 w-full group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                                    <div className="flex items-center gap-2">
-                                      <IconComponent className="h-4 w-4 text-muted-foreground" />
-                                      <div className="text-sm font-medium leading-none">
-                                        {category.name}
-                                      </div>
+                      Home
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+
+                {/* Women Navigation */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger
+                    className={cn(
+                      currentPath.includes("category=women") &&
+                        "bg-transparent text-accent-foreground cursor-pointer"
+                    )}
+                  >
+                    Women
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid w-lg gap-3 p-4">
+                      <div className="row-span-3">
+                        <div className="mb-3">
+                          <h4 className="text-sm font-medium leading-none mb-1">
+                            Women's Collection
+                          </h4>
+                          <p className="text-xs leading-snug text-muted-foreground">
+                            Premium intimates & loungewear
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-6 ">
+                          {womenCategories.map((category) => {
+                            const IconComponent = category.icon;
+                            return (
+                              <Link
+                                key={category.path}
+                                href={category.path}
+                                passHref
+                              >
+                                <NavigationMenuLink className="col-span-1 w-full group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <IconComponent className="h-4 w-4 text-muted-foreground" />
+                                    <div className="text-sm font-medium leading-none">
+                                      {category.name}
                                     </div>
-                                    <p className="line-clamp-2 pl-6 text-xs leading-snug text-muted-foreground">
-                                      {category.description}
-                                    </p>
-                                  </NavigationMenuLink>
-                                </Link>
-                              );
-                            })}
-                          </div>
+                                  </div>
+                                  <p className="line-clamp-2 pl-6 text-xs leading-snug text-muted-foreground">
+                                    {category.description}
+                                  </p>
+                                </NavigationMenuLink>
+                              </Link>
+                            );
+                          })}
                         </div>
                       </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-                  {/* Men Navigation */}
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger
-                      className={cn(
-                        currentPath.includes("category=men") &&
-                          "bg-accent text-accent-foreground cursor-pointer"
-                      )}
-                    >
-                      Men
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid w-lg gap-3 p-4">
-                        <div className="row-span-3">
-                          <div className="mb-3">
-                            <h4 className="text-sm font-medium leading-none mb-1">
-                              Men's Collection
-                            </h4>
-                            <p className="text-xs leading-snug text-muted-foreground">
-                              Comfort & style essentials
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-3 gap-4">
-                            {menCategories.map((category) => {
-                              const IconComponent = category.icon;
-                              return (
-                                <Link
-                                  key={category.path}
-                                  href={category.path}
-                                  legacyBehavior
-                                  passHref
-                                >
-                                  <NavigationMenuLink className="col-span-1 group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                                    <div className="flex items-center gap-2">
-                                      <IconComponent className="h-4 w-4 text-muted-foreground" />
-                                      <div className="text-sm font-medium leading-none">
-                                        {category.name}
-                                      </div>
+                {/* Men Navigation */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger
+                    className={cn(
+                      currentPath.includes("category=men") &&
+                        "bg-accent text-accent-foreground cursor-pointer"
+                    )}
+                  >
+                    Men
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid w-lg gap-3 p-4">
+                      <div className="row-span-3">
+                        <div className="mb-3">
+                          <h4 className="text-sm font-medium leading-none mb-1">
+                            Men's Collection
+                          </h4>
+                          <p className="text-xs leading-snug text-muted-foreground">
+                            Comfort & style essentials
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          {menCategories.map((category) => {
+                            const IconComponent = category.icon;
+                            return (
+                              <Link
+                                key={category.path}
+                                href={category.path}
+                                legacyBehavior
+                                passHref
+                              >
+                                <NavigationMenuLink className="col-span-1 group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <IconComponent className="h-4 w-4 text-muted-foreground" />
+                                    <div className="text-sm font-medium leading-none">
+                                      {category.name}
                                     </div>
-                                    <p className="line-clamp-2 pl-6 text-xs leading-snug text-muted-foreground">
-                                      {category.description}
-                                    </p>
-                                  </NavigationMenuLink>
-                                </Link>
-                              );
-                            })}
-                          </div>
+                                  </div>
+                                  <p className="line-clamp-2 pl-6 text-xs leading-snug text-muted-foreground">
+                                    {category.description}
+                                  </p>
+                                </NavigationMenuLink>
+                              </Link>
+                            );
+                          })}
                         </div>
                       </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
 
-              {/* Featured Links */}
-              <div
-                className="ml-auto flex items-center gap-1
+            {/* Featured Links */}
+            <div
+              className="ml-auto flex items-center gap-1
               "
+            >
+              <Link
+                href="#new-arrivals"
+                scroll={true}
+                className="text-sm text-primary font-medium  hover:text-foreground transition-colors"
               >
-                <Link
-                  href="#new-arrivals"
-                  scroll={true}
-                  className="text-sm text-primary font-medium  hover:text-foreground transition-colors"
-                >
-                  New Arrivals
-                </Link>
-                <Button
-                  variant={"ghost"}
-                  className="text-sm  font-medium text-red-600"
-                  onClick={() => router.push("/sale")}
-                >
-                  Sale
-                </Button>
-              </div>
-            </nav>
-          </div>
+                New Arrivals
+              </Link>
+              <Button
+                variant={"ghost"}
+                className="text-sm  font-medium text-red-600"
+                onClick={() => router.push("/sale")}
+              >
+                Sale
+              </Button>
+            </div>
+          </nav>
         </div>
-      )}
+      </div>
     </header>
   );
 }

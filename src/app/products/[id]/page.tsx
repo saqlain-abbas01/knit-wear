@@ -35,15 +35,9 @@ import type { AxiosError } from "axios";
 import { useCartStore } from "@/store/cartStore";
 import RelatedProduct from "@/components/RelatedProduct";
 import { addWishList, fetchWishList } from "@/lib/api/wishlist";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+
 import React, { useRef } from "react";
+import ChatWithSeller from "@/components/ChatWithSeller";
 
 const sizes = [
   { label: "XS", value: "xs" },
@@ -549,128 +543,5 @@ export default function ProductPage() {
         </div>
       </main>
     </div>
-  );
-}
-
-function ChatWithSeller({ product }: { product: Product }) {
-  const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      sender: "admin",
-      text: `Hi! How can I help you with '${product?.name}'?`,
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const chatEndRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (open && chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, open]);
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages((msgs) => [
-      ...msgs,
-      { sender: "user", text: input },
-      {
-        sender: "admin",
-        text: "Thank you for your message! We'll get back to you soon.",
-      },
-    ]);
-    setInput("");
-  };
-
-  return (
-    <>
-      <Button
-        variant="outline"
-        className="w-full h-12 text-base font-semibold flex items-center justify-center gap-2"
-        onClick={() => setOpen(true)}
-      >
-        <Zap className="h-5 w-5 text-primary" />
-        Chat with Seller
-      </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md w-full p-0 overflow-hidden">
-          <DialogHeader className="bg-primary text-white px-6 py-4">
-            <DialogTitle>Chat with Seller</DialogTitle>
-          </DialogHeader>
-          <div className="p-6 bg-background h-80 flex flex-col gap-4">
-            <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-              {messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex ${
-                    msg.sender === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <div
-                    className={`rounded-2xl px-4 py-2 max-w-[75%] text-sm shadow-md ${
-                      msg.sender === "user"
-                        ? "bg-primary text-white rounded-br-none"
-                        : "bg-muted text-foreground rounded-bl-none"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
-              <div ref={chatEndRef} />
-            </div>
-            <div className="flex gap-2 items-end">
-              <Textarea
-                value={input}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setInput(e.target.value)
-                }
-                placeholder="Type your message..."
-                className="resize-none min-h-[40px] max-h-24 flex-1"
-                onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-              />
-              <Button
-                onClick={handleSend}
-                disabled={!input.trim()}
-                size="icon"
-                className="h-10 w-10"
-              >
-                <SendIcon className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-          <DialogFooter className="bg-muted px-6 py-3 flex justify-end">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-function SendIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M22 2 11 13" />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m22 2-7 20-4-9-9-4 20-7z"
-      />
-    </svg>
   );
 }

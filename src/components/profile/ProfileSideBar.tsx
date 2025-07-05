@@ -18,6 +18,7 @@ import { userLogout } from "@/lib/api/user";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/lib/types";
+import { disconnectSocket } from "@/lib/connectSocket";
 
 export default function ProfileSidebar({
   activeTab,
@@ -57,6 +58,7 @@ export default function ProfileSidebar({
       toast.success(`User logout sucessfully`);
       queryClient.clear();
       window.location.href = "/auth/signin";
+      disconnectSocket();
       router.refresh();
     },
     onError: (error) => {

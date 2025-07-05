@@ -56,7 +56,7 @@ const ProductPageCart = ({ products }: ProductCartProps) => {
     onError: (error: AxiosError) => {
       const errorMessage = error.response?.data;
       if (errorMessage === "Unauthorized") {
-        toast.error("Unauthorized", {
+        toast.warning("Unauthorized", {
           description: `Please login first to add product to cart`,
           action: {
             label: "Login",
@@ -84,7 +84,7 @@ const ProductPageCart = ({ products }: ProductCartProps) => {
     onError: (error: AxiosError) => {
       const errorMessage = error.response?.data;
       if (errorMessage === "Unauthorized") {
-        toast.error("Unauthorized", {
+        toast.warning("Unauthorized", {
           description: `Please login first to add product to wishlist`,
           action: {
             label: "Login",
